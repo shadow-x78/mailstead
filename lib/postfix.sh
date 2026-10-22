@@ -1,14 +1,8 @@
 #!/usr/bin/env bash
-# lib/postfix.sh - Postfix configuration (main.cf via postconf, master.cf via
-# postconf -M/-P, SQL maps, transport, aliases). Never rewrites files with sed
-# and never replaces main.cf/master.cf wholesale.
 # shellcheck shell=bash
 
 postfix_sql_dir() { printf '%s/sql' "$(path postfix_conf)"; }
 
-# postfix_compat_vars - set POSTFIX_COMPAT_LEVEL / POSTFIX_TLS_PROTOCOLS for the
-# installed Postfix version. The ">=TLSv1.2" operator and compatibility_level
-# 3.6 require Postfix >= 3.6; RHEL/AlmaLinux 9 ship 3.5.x.
 postfix_compat_vars() {
     local v major minor
     v="$(postconf -h mail_version 2>/dev/null | awk '{print $1}')"
@@ -20,7 +14,6 @@ postfix_compat_vars() {
         POSTFIX_COMPAT_LEVEL="3.6"
         POSTFIX_TLS_PROTOCOLS=">=TLSv1.2"
     else
-        # Postfix < 3.6: no range operator; list TLS versions explicitly.
         POSTFIX_COMPAT_LEVEL="2"
         POSTFIX_TLS_PROTOCOLS="TLSv1.2, TLSv1.3"
     fi
@@ -30,8 +23,6 @@ postfix_compat_vars() {
 postfix_write_sql_maps() {
     local dir db_pw
     dir="$(postfix_sql_dir)"
-    # secret_ensure (idempotent, dry-run safe) rather than secret_get, which
-    # fails when P03 has not yet written the file in a dry run.
     db_pw="$(secret_ensure db_mailro)"
     ensure_dir "$dir" 0750 root:postfix
     DB_MAILRO_PW="$db_pw"
@@ -85,10 +76,8 @@ postfix_milters_block() {
 }
 
 postfix_configure() {
-    # Ensure TLS paths reflect the current certificate.
     TLS_CERT_FILE="${TLS_CERT_FILE:-$(state_get TLS_CERT_FILE 2>/dev/null || path snakeoil_cert)}"
     TLS_KEY_FILE="${TLS_KEY_FILE:-$(state_get TLS_KEY_FILE 2>/dev/null || path snakeoil_key)}"
-    # SQL maps are only needed when a mailbox backend exists.
     if [[ "$(comp_get mailbox)" == "yes" ]]; then
         postfix_write_sql_maps
     fi
@@ -104,8 +93,6 @@ postfix_configure() {
     render_template "${APP_ROOT}/templates/postfix/main.cf.tpl" "$lines" 0640 root:root
     backup_file "$(path postfix_conf)/main.cf"
     if ((DRY_RUN)); then
-        # The rendered file is intentionally not written in a dry run, so just
-        # preview the application instead of reading the file back.
         log_info "[dry-run] postconf_apply_file ${lines}"
     else
         postconf_apply_file "$lines"
@@ -124,7 +111,6 @@ postfix_configure() {
     systemctl reload postfix 2>/dev/null || systemctl restart postfix
 }
 
-# postfix_ensure_logs - create /var/log/mail.log with ownership postlogd can write.
 postfix_ensure_logs() {
     ((DRY_RUN)) && return 0
     touch /var/log/mail.log 2>/dev/null || true
@@ -137,9 +123,7 @@ postfix_master_configure() {
         log_info "[dry-run] postconf -M/-P master.cf"
         return 0
     fi
-    # slow transport service (always).
     postconf -M 'slow/unix=slow unix - - n - 5 smtp' >/dev/null
-    # postlog service writes /var/log/mail.log (maillog_file); no rsyslog needed.
     postconf -M 'postlog/unix-dgram=postlog unix-dgram n - n - 1 postlogd' >/dev/null
 
     if [[ "$(comp_get mailbox)" == "yes" ]]; then
@@ -168,7 +152,6 @@ postfix_master_configure() {
         postconf -P 'smtps/inet/smtpd_sender_restrictions=reject_sender_login_mismatch,permit_sasl_authenticated,reject' >/dev/null
         postconf -P 'smtps/inet/milter_macro_daemon_name=ORIGINATING' >/dev/null
     else
-        # send-only: remove submission/smtps if present.
         postconf -X 'submission/inet' >/dev/null 2>&1 || true
         postconf -X 'smtps/inet' >/dev/null 2>&1 || true
     fi
@@ -198,7 +181,6 @@ postfix_aliases() {
     newaliases 2>/dev/null || true
 }
 
-# postfix_update_tls_paths - switch cert paths after (re)issuance.
 postfix_update_tls_paths() {
     local cert key
     cert="$(state_get TLS_CERT_FILE 2>/dev/null || printf '')"
@@ -209,7 +191,6 @@ postfix_update_tls_paths() {
     if postfix check >/dev/null 2>&1; then systemctl reload postfix; fi
 }
 
-# server-footer master.cf edits (used by signatures server mode).
 postfix_footer_enable() {
     local libexec="$APP_LIBEXEC"
     if ((DRY_RUN)); then

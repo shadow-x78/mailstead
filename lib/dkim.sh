@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# lib/dkim.sh - OpenDKIM signing keys and tables (one key per domain).
 # shellcheck shell=bash
 
 opendkim_conf_dir() { path opendkim_conf; }
@@ -13,7 +12,6 @@ dkim_configure() {
     backup_file "${dir}/opendkim.conf"
     render_template "${APP_ROOT}/templates/opendkim/opendkim.conf.tpl" "${dir}/opendkim.conf" 0644 root:root
 
-    # trusted hosts
     if ((!DRY_RUN)); then
         cat >"${dir}/trusted.hosts" <<EOF
 127.0.0.1
@@ -35,7 +33,6 @@ EOF
     wait_for_port 127.0.0.1 8891 10 || log_warn "opendkim is not listening on 8891 yet."
 }
 
-# Debian ships /etc/default/opendkim with SOCKET/RUNDIR that can override the conf.
 dkim_fix_defaults() {
     local f="/etc/default/opendkim"
     [[ -f "$f" ]] || return 0
@@ -55,7 +52,6 @@ _dkim_selector_default() {
 
 dkim_key_dir() { printf '%s/keys/%s' "$(opendkim_conf_dir)" "$1"; }
 
-# dkim_add_domain DOMAIN [SELECTOR]
 dkim_add_domain() {
     local domain="$1" sel="${2:-$(_dkim_selector_default)}"
     require_domain "$domain"
@@ -87,8 +83,6 @@ dkim_add_domain() {
     state_set "DKIM_SELECTOR_${domain}" "$sel"
 }
 
-# Remove every table line that refers to DOMAIN (as a whole DNS token, so
-# sub.example.com is never treated as example.com), then append the new line.
 _dkim_table_remove_domain() {
     local table="$1" domain="$2"
     [[ -f "$table" ]] || return 0
@@ -124,7 +118,6 @@ dkim_selector() {
     state_get "DKIM_SELECTOR_${domain}" 2>/dev/null || _dkim_selector_default
 }
 
-# dkim_record_string DOMAIN [SEL] -> single-line TXT value.
 dkim_record_string() {
     local domain="$1" sel="${2:-$(dkim_selector "$1")}"
     local txt
@@ -156,7 +149,6 @@ dkim_print_txt() {
         return 1
     }
     printf '%s._domainkey.%s. TXT "%s"\n' "$sel" "$domain" "$rec"
-    # Split (BIND) form for panels that cap label length at 255.
     printf '%s._domainkey.%s. TXT (\n' "$sel" "$domain"
     printf '%s' "$rec" | fold -w 255 | awk '{printf "  \"%s\"\n", $0}'
     printf ')\n'

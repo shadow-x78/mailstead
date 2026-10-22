@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# lib/security.sh - firewall, fail2ban and SELinux hardening (P12).
 # shellcheck shell=bash
 
 security_configure() {
@@ -11,8 +10,6 @@ security_configure() {
     logrotate_configure
 }
 
-# Never enable a firewall that was not already running without confirmation.
-# Never close SSH.
 firewall_configure() {
     local choice backend ssh_port
     choice="$(comp_get firewall)"
@@ -116,7 +113,6 @@ selinux_apply() {
     run restorecon -Rv /var/www/roundcube 2>/dev/null || true
     run restorecon -Rv "/var/lib/${APP_SLUG}" 2>/dev/null || true
 
-    # vmail + DKIM + certs must be reachable by the mail daemons.
     run semanage fcontext -a -t mail_home_rw_t "/var/vmail(/.*)?" 2>/dev/null || true
     run restorecon -Rv /var/vmail 2>/dev/null || true
 
@@ -134,7 +130,6 @@ logrotate_configure() {
         return 0
     fi
     cat >"$f" <<EOF
-# ${APP_MANAGED_MARK}
 /var/log/mail.log
 /var/log/dovecot.log {
     weekly

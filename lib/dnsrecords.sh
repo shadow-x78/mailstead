@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# lib/dnsrecords.sh - generate and verify DNS records for a domain (P13).
 # shellcheck shell=bash
 
 DNS_PUBLIC_RESOLVERS=(1.1.1.1 8.8.8.8)
@@ -7,7 +6,6 @@ DNS_PUBLIC_RESOLVERS=(1.1.1.1 8.8.8.8)
 dns_domain_ip4() { state_get IP4 2>/dev/null || printf ''; }
 dns_domain_ip6() { state_get IP6 2>/dev/null || printf ''; }
 
-# dns_records_print DOMAIN -> BIND zone snippet + human table.
 dns_records_print() {
     local domain="$1"
     require_domain "$domain"
@@ -63,7 +61,6 @@ EOF
     printf 'DMARC path: p=none (2-4 weeks) -> quarantine pct=25 -> pct=100 -> reject\n'
 }
 
-# --- queries ---
 dns_query() {
     local name="$1" type="${2:-A}" resolver="${3:-}"
     if [[ -n "$resolver" ]]; then
@@ -154,7 +151,6 @@ dns_check() {
         if [[ "$got" == *"letsencrypt"* ]]; then _dns_ok "CAA letsencrypt"; else _dns_bad "CAA missing"; fi
     done
 
-    # FCrDNS via default resolver.
     local ptr
     ptr="$(dig +short -x "$ip4" 2>/dev/null | tr -d '.' | tr '\n' ' ')"
     if [[ "$ptr" == *"$host"* ]]; then _dns_ok "PTR(IP) = ${host}"; else

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# lib/rspamd.sh - Rspamd + Redis/Valkey (spam filtering, SPF/DKIM/DMARC checks).
 # shellcheck shell=bash
 
 rspamd_local_d() { path rspamd_local_d; }
@@ -85,7 +84,6 @@ _rspamd_render() {
     render_template "${APP_ROOT}/templates/rspamd/${tpl}" "$(rspamd_local_d)/${name}" 0644 root:root
 }
 
-# Ensure Nginx basic-auth file for the WebUI proxy exists.
 rspamd_htpasswd() {
     local pw
     pw="$(secret_get rspamd_ui)" || return 0

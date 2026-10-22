@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# lib/signatures.sh - signature system: text, image and HTML templates, plus
-# Roundcube integration and desktop-client export (plan-3 section F).
 # shellcheck shell=bash
 
 sig_root() { printf '%s/signatures' "$APP_LIB"; }
@@ -42,7 +40,6 @@ sig_env_set() {
     mv -f -- "$tmp" "$f"
 }
 
-# ---- value resolution ----
 sig_resolve_values() {
     local domain="$1"
     local local_part="$2"
@@ -77,7 +74,6 @@ sig_resolve_values() {
 }
 
 sig_render_values_args() {
-    # Emit --set KEY=VALUE pairs for the Python renderer.
     local -a map=(
         "NAME=${NAME:-}" "TITLE=${TITLE:-}" "ORG=${ORG:-}" "EMAIL=${SIG_EMAIL:-}"
         "PHONE=${SIG_PHONE:-}" "PHONE_RAW=${SIG_PHONE_RAW:-}" "WEBSITE=${WEBSITE:-}"
@@ -106,7 +102,6 @@ sig_template_path() {
     esac
 }
 
-# sig_render_user EMAIL -> writes rendered/<domain>/<local>.{html,txt}
 sig_render_user() {
     local email="$1"
     require_email "$email"
@@ -132,7 +127,6 @@ sig_render_user() {
     chmod 0640 "$out_html" "$out_txt"
     chown root:"$(web_user)" "$out_html" "$out_txt" 2>/dev/null || true
 
-    # Quality warnings.
     local size
     size="$(wc -c <"$out_html")"
     ((size > 10240)) && log_warn "signature for ${email} exceeds 10KB (${size})."
@@ -151,7 +145,6 @@ sig_apply_all() {
     done < <(db_list_domains)
 }
 
-# ---- image handling ----
 sig_image_add() {
     local domain="$1" file="$2" kind="${3:-logo}"
     require_domain "$domain"
@@ -189,7 +182,6 @@ sig_image_add() {
         sig_env_set "$(sig_profile_env "$domain")" BANNER_H "$h"
         sig_env_set "$(sig_profile_env "$domain")" BANNER_ALT "${BANNER_ALT:-banner}"
     else
-        # Store 2x; display at half dimensions.
         sig_env_set "$(sig_profile_env "$domain")" LOGO_URL "$url_dest"
         sig_env_set "$(sig_profile_env "$domain")" LOGO_W "$((w / 2))"
         sig_env_set "$(sig_profile_env "$domain")" LOGO_H "$((h / 2))"
@@ -197,7 +189,6 @@ sig_image_add() {
     log_info "added ${kind} to domain ${domain}: ${url_dest} (${w}x${h})"
 }
 
-# ---- export ----
 sig_export() {
     local email="$1" format="$2" out="$3"
     local domain="${email#*@}" local_part="${email%%@*}"
@@ -227,7 +218,6 @@ sig_export() {
         *) die "unsupported export format: ${format}" "$EX_USAGE" ;;
     esac
     cat >"${out}/README-signature.md" <<EOF
-# Signature for ${email}
 
 - **Thunderbird:** Settings > account identity > attach the signature from a file > choose signature.html (enable HTML).
 - **Outlook (Windows):** copy ${local_part}.htm and ${local_part}.txt to %APPDATA%\Microsoft\Signatures\ then choose the signature.
@@ -237,7 +227,6 @@ EOF
     log_info "exported the signature to ${out} (${format})."
 }
 
-# ---- server footer ----
 sig_server_install_footer() {
     local dst="${APP_LIBEXEC}/mailstead-footer.py"
     ensure_dir "$APP_LIBEXEC" 0755 root:root
@@ -269,7 +258,6 @@ cmd_sig_server() {
     esac
 }
 
-# ---- main ----
 cmd_sig() {
     require_config
     local sub="${1:-}"

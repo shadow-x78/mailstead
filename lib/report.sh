@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# lib/report.sh - status, queue, logs, doctor, delivery tests (P16).
 # shellcheck shell=bash
 
 _core_services() {
@@ -122,12 +121,10 @@ cmd_test_send() {
     if [[ "$via" == "local" ]]; then
         run swaks --to "$to" --from "$from" --server 127.0.0.1 --port 25
     else
-        # The tool does not store mailbox passwords; use --password or the admin box.
         if [[ -z "$pw" ]]; then
             pw="$(secret_get admin_mailbox 2>/dev/null || printf '')"
         fi
         [[ -n "$pw" ]] || die "pass --password for the ${from} password." "$EX_USAGE"
-        # run_secret: keep the password out of the log.
         run_secret swaks --to "$to" --from "$from" --server "$MAIL_HOSTNAME" --port 587 \
             --tls --auth LOGIN --auth-user "$from" --auth-password "$pw"
     fi
@@ -192,7 +189,6 @@ cmd_doctor() {
         fi
     fi
 
-    # Reputation / DNSBL check (via the configured resolver).
     local pub_ip
     pub_ip="$(dns_domain_ip4)"
     if command -v dig >/dev/null 2>&1 && [[ -n "$pub_ip" ]]; then
@@ -228,7 +224,6 @@ _cert_days_left() {
 
 report_redact_enabled() { [[ "${REDACT:-0}" == "1" ]]; }
 
-# redact_value TEXT - with --redact, mask IPv4/IPv6 addresses before printing.
 redact_value() {
     local v="$1"
     if report_redact_enabled; then
@@ -237,7 +232,6 @@ redact_value() {
     printf '%s' "$v"
 }
 
-# DNSBL check via local resolver only (Spamhaus blocks public resolvers).
 doctor_dnsbl() {
     local ip="${1:-$(dns_domain_ip4)}"
     [[ -n "$ip" ]] || return 0

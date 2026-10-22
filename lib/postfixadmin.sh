@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# lib/postfixadmin.sh - PostfixAdmin dashboard install (gui mode, P09).
 # shellcheck shell=bash
 
 pfa_dir() { printf '%s/postfixadmin' "$(path web_root)"; }
@@ -32,7 +31,6 @@ postfixadmin_configure() {
     cp -a "${inner}/." "$dir/"
     rm -rf "$tmp"
 
-    # Database user with full rights on the mailserver schema.
     pfa_pw="$(secret_ensure db_postfixadmin)"
     db_sql_root "CREATE USER IF NOT EXISTS 'postfixadmin'@'127.0.0.1' IDENTIFIED BY '$(sql_quote "$pfa_pw")';"
     db_sql_root "ALTER USER 'postfixadmin'@'127.0.0.1' IDENTIFIED BY '$(sql_quote "$pfa_pw")';"
@@ -59,7 +57,6 @@ postfixadmin_schema() {
     local dir="$1"
     local docroot
     docroot="$(pfa_docroot)"
-    # Try the CLI upgrader first (v3.3+/v4), then the setup endpoint.
     if [[ -f "${docroot}/upgrade.php" ]]; then
         php "${docroot}/upgrade.php" >/dev/null 2>&1 && {
             log_info "PostfixAdmin schema applied via upgrade.php."
@@ -88,7 +85,6 @@ postfixadmin_create_admin() {
         log_warn "ADMIN_EMAIL is not set; skipping admin creation."
         return 0
     }
-    # Single implementation of admin creation (db_add_admin -> run_secret).
     db_add_admin "$ADMIN_EMAIL" "$pw" 2>/dev/null ||
         log_warn "could not create the PostfixAdmin admin automatically (it may already exist)."
 }

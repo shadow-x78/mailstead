@@ -1,16 +1,10 @@
 #!/usr/bin/env bash
-# lib/dovecot.sh - Dovecot 2.3 configuration. Refuses Dovecot >= 2.4 until a
-# templates/dovecot24/ set is provided (config format changed drastically).
 # shellcheck shell=bash
 
 dovecot_version() {
     dovecot --version 2>/dev/null | awk '{print $1}'
 }
 
-# dovecot_tpl_dir - select the template set that matches the installed version.
-# 2.3.x -> templates/dovecot23 ; 2.4.x -> templates/dovecot24 (must exist).
-# If the version cannot be determined (e.g. a dry run before P01 installed
-# dovecot) it defaults to the 2.3 set rather than failing.
 dovecot_tpl_dir() {
     local v major minor
     v="$(dovecot_version)"
@@ -54,7 +48,6 @@ dovecot_configure() {
 
     ensure_dir "$conf_d" 0755 root:root
 
-    # Plain conf.d files.
     local -a confs=(
         "10-auth.conf"
         "10-mail.conf"
@@ -75,7 +68,6 @@ dovecot_configure() {
         render_template "${tpl}/${c}.tpl" "${conf_d}/${c}" 0644 root:root
     done
 
-    # auth-sql include and the SQL credentials file.
     backup_file "${conf_d}/auth-sql.conf.ext"
     render_template "${tpl}/auth-sql.conf.ext.tpl" "${conf_d}/auth-sql.conf.ext" 0644 root:root
 
@@ -95,7 +87,6 @@ dovecot_configure() {
     systemctl restart dovecot || die "failed to start dovecot."
 }
 
-# dovecot_ensure_logs - create /var/log/dovecot.log (root:dovecot, 0640).
 dovecot_ensure_logs() {
     ((DRY_RUN)) && return 0
     touch /var/log/dovecot.log 2>/dev/null || true

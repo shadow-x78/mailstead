@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# lib/roundcube.sh - Roundcube webmail install and configuration (P10).
 # shellcheck shell=bash
 
 roundcube_dir() { printf '%s/roundcube' "$(path web_root)"; }
@@ -20,7 +19,6 @@ roundcube_configure() {
     load_versions
     ensure_dir "$(path web_root)" 0755 root:root
 
-    # Fetch and verify the pinned tarball.
     local cache="${APP_LIB}/cache/roundcubemail-${ROUNDCUBE_VERSION}.tar.gz"
     download_verified "$ROUNDCUBE_URL" "$cache" "$ROUNDCUBE_SHA256"
 
@@ -40,7 +38,6 @@ roundcube_configure() {
     rm -rf "$tmp"
     docroot="$(roundcube_docroot)"
 
-    # Roundcube database and user.
     local rc_pw
     rc_pw="$(secret_ensure db_roundcube)"
     db_sql_root "CREATE DATABASE IF NOT EXISTS roundcube CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
@@ -49,7 +46,6 @@ roundcube_configure() {
     db_sql_root "GRANT ALL PRIVILEGES ON roundcube.* TO 'roundcube'@'127.0.0.1';"
     db_sql_root "FLUSH PRIVILEGES;"
 
-    # Main config.
     local rc_plugins="['archive','zipdownload','managesieve','password']"
     if [[ "$(comp_get signatures)" != "none" && -d "${APP_ROOT}/templates/php/mailstead_signature" ]]; then
         rc_plugins="['archive','zipdownload','managesieve','password','mailstead_signature']"
@@ -62,7 +58,6 @@ roundcube_configure() {
     render_template "${APP_ROOT}/templates/php/roundcube.config.inc.php.tpl" \
         "${dir}/config/config.inc.php" 0640 root:"$(web_user)"
 
-    # Password plugin.
     DB_MAILPW_PW="$(secret_ensure db_mailpw)"
     TPL_VARS="DB_MAILPW_PW"
     backup_file "${dir}/plugins/password/config.inc.php"
@@ -71,7 +66,6 @@ roundcube_configure() {
 
     roundcube_install_signature_plugin
 
-    # Schema.
     (cd "$dir" && php bin/initdb.sh --dir=SQL) >/dev/null 2>&1 ||
         log_warn "php bin/initdb.sh did not run automatically; see the Roundcube docs to install the schema."
 

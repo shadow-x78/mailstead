@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# lib/backup.sh - backup, restore, uninstall (P15) and scheduled backups.
 # shellcheck shell=bash
 
 backup_paths() {
@@ -84,7 +83,6 @@ backup_schedule() {
         return 0
     fi
     cat >"$unit" <<EOF
-# ${APP_MANAGED_MARK}
 [Unit]
 Description=${APP_NAME} daily backup
 [Service]
@@ -92,7 +90,6 @@ Type=oneshot
 ExecStart=/usr/local/bin/${APP_CMD} backup
 EOF
     cat >"$timer" <<EOF
-# ${APP_MANAGED_MARK}
 [Unit]
 Description=${APP_NAME} daily backup timer
 [Timer]
@@ -127,7 +124,6 @@ restore_run() {
     if [[ -f "${staging}/database.sql" ]] && command -v mysql >/dev/null 2>&1; then
         mysql <"${staging}/database.sql" || log_warn "could not import the database."
     fi
-    # Restore each recorded path (skip the database.sql entry).
     (cd "$staging" && find . -mindepth 1 -maxdepth 1 ! -name database.sql -exec cp -a -- {} / \;)
     rm -rf "$staging"
 
@@ -182,9 +178,6 @@ uninstall_run() {
     fi
 }
 
-# _uninstall_packages - remove only the packages Mailstead itself installed.
-# The list is captured at install time (P01 -> state INSTALLED_PKGS) so that
-# pre-existing shared packages (nginx, mariadb, ...) are never removed.
 _uninstall_packages() {
     local tracked
     tracked="$(state_get INSTALLED_PKGS 2>/dev/null || printf '')"
@@ -199,11 +192,6 @@ _uninstall_packages() {
     pkg_remove "${reals[@]}" || log_warn "could not remove some packages; check the package manager output."
 }
 
-# _uninstall_managed_paths - delete every file/directory Mailstead created:
-# config, state, logs, backups, the tool itself, web apps and systemd units.
-# Never touches /etc/letsencrypt wholesale (shared) or /var/vmail (user data).
-# The managed-path list is defined once so the dry-run preview and the real
-# removal stay in sync.
 _uninstall_managed_list() {
     local p
     for p in \
@@ -229,7 +217,6 @@ _uninstall_managed_paths() {
     while IFS= read -r p; do
         [[ -e "$p" ]] && rm -rf -- "$p"
     done < <(_uninstall_managed_list)
-    # Nginx vhosts managed by Mailstead.
     local c
     for c in /etc/nginx/conf.d/"${APP_SLUG}"-*.conf; do
         [[ -e "$c" ]] && rm -f -- "$c"
@@ -237,7 +224,6 @@ _uninstall_managed_paths() {
     systemctl daemon-reload 2>/dev/null || true
 }
 
-# _uninstall_vmail_user - remove the vmail system user (last step).
 _uninstall_vmail_user() {
     ((DRY_RUN)) && return 0
     userdel vmail 2>/dev/null || true

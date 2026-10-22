@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
-# lib/tls.sh - certificates (Let's Encrypt via certbot/acme.sh, self-signed,
-# existing) for the SMTP/IMAP host, the admin host and per-domain web hosts.
 # shellcheck shell=bash
 
 : "${STAGING:=0}"
 
-# tls_set_paths HOST - resolve TLS_CERT_FILE/TLS_KEY_FILE for a host.
 tls_set_paths() {
     local host="$1" base
     base="/etc/ssl/${APP_SLUG}/${host}"
@@ -41,9 +38,6 @@ tls_bootstrap_paths() {
     export TLS_CERT_FILE TLS_KEY_FILE
 }
 
-# tls_ensure_vars - populate TLS_CERT_FILE/TLS_KEY_FILE from state (or snakeoil)
-# when they are not already set in this shell. Safe to call from any phase,
-# including on a re-run where P04 was skipped.
 tls_ensure_vars() {
     if [[ -z "${TLS_CERT_FILE:-}" ]]; then
         TLS_CERT_FILE="$(state_get TLS_CERT_FILE 2>/dev/null || path snakeoil_cert)"
@@ -54,7 +48,6 @@ tls_ensure_vars() {
     export TLS_CERT_FILE TLS_KEY_FILE
 }
 
-# tls_ensure_selfsigned HOST [SAN...]
 tls_ensure_selfsigned() (
     local host="$1"
     shift
@@ -76,7 +69,6 @@ tls_ensure_selfsigned() (
     log_info "created a self-signed certificate for ${host}."
 )
 
-# ---- certbot / acme.sh ----
 _certbot() {
     local -a args=(certbot)
     ((STAGING)) && args+=(--staging)
@@ -88,7 +80,6 @@ _certbot() {
     "${args[@]}"
 }
 
-# tls_issue_le_host HOST [SAN...] - main mail/admin certificate.
 tls_issue_le_host() {
     local host="$1"
     shift
@@ -124,8 +115,6 @@ tls_issue_le_host() {
     esac
 }
 
-# tls_issue_web DOMAIN - per-domain certificate for autoconfig/autodiscover/mta-sts.
-# Returns 0 on success, non-zero on failure (callers warn but keep going).
 tls_issue_web() {
     local domain="$1"
     local -a names=("autoconfig.${domain}" "autodiscover.${domain}")
@@ -133,7 +122,6 @@ tls_issue_web() {
         names+=("mta-sts.${domain}")
     fi
 
-    # Pre-check DNS for each name; if missing, skip issuance with guidance.
     local n
     local -a dargs=()
     for n in "${names[@]}"; do
@@ -177,7 +165,6 @@ _tls_issue_acmesh() {
         return 1
 }
 
-# tls_install_deploy_hook - reload services after certificate renewal.
 tls_install_deploy_hook() {
     local hook="/etc/letsencrypt/renewal-hooks/deploy/${APP_SLUG}.sh"
     ensure_dir "$(dirname -- "$hook")" 0755 root:root
@@ -187,7 +174,6 @@ tls_install_deploy_hook() {
     fi
     cat >"$hook" <<EOF
 #!/bin/sh
-# ${APP_MANAGED_MARK}
 /usr/sbin/postfix check && /usr/sbin/postfix reload
 /usr/bin/doveconf -n >/dev/null 2>&1 && systemctl reload dovecot
 if [ -x "$(path nginx_bin)" ]; then $(path nginx_bin) -t 2>/dev/null && systemctl reload nginx; fi
@@ -196,7 +182,6 @@ EOF
     chmod 0755 "$hook"
 }
 
-# tls_configure - full certificate setup for the primary host (P04).
 tls_configure() {
     local host="${MAIL_HOSTNAME}"
     local -a san=()
@@ -249,7 +234,6 @@ tls_reload_services() {
     fi
 }
 
-# ---- CLI commands ----
 cmd_cert_issue() {
     local web=""
     while [[ $# -gt 0 ]]; do

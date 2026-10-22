@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# lib/autoconfig.sh - Thunderbird autoconfig + Outlook Autodiscover, MTA-STS,
-# TLS-RPT and Apple profiles (plan-3 section E, plan-1 P11).
 # shellcheck shell=bash
 
 domains_list_file() { printf '%s/domains.list' "$APP_LIB"; }
@@ -38,12 +36,9 @@ domains_list_remove() {
 tls_web_paths() {
     local domain="$1"
     local saved_cert="${TLS_CERT_FILE:-}" saved_key="${TLS_KEY_FILE:-}"
-    # Reuse the single cert-path source (tls_set_paths) for the "<domain>-web"
-    # certificate; fall back to the mail certificate if it is not issued yet.
     tls_set_paths "${domain}-web"
     WEB_CERT_FULLCHAIN="$TLS_CERT_FILE"
     WEB_CERT_KEY="$TLS_KEY_FILE"
-    # tls_set_paths also exports the mail-host vars; restore them.
     TLS_CERT_FILE="$saved_cert"
     TLS_KEY_FILE="$saved_key"
     export TLS_CERT_FILE TLS_KEY_FILE
@@ -69,7 +64,6 @@ autoconfig_write_thunderbird() {
 }
 
 autoconfig_write_php() {
-    # Ensure PHP-FPM + the autodiscover script and its support files exist.
     local domain="$1"
     APP_ETC_DIR="$APP_ETC"
     APP_LIB_DIR="$APP_LIB"
@@ -108,7 +102,6 @@ autoconfig_write_nginx() {
         "$(nginx_conf_dir)/${APP_SLUG}-autoconfig-${domain}.conf" 0644 root:root
 }
 
-# autoconfig_add_domain DOMAIN [DISPLAY_NAME]
 autoconfig_add_domain() {
     local domain="$1" display="${2:-$1}"
     [[ "$(comp_get autoconfig)" != "none" ]] || return 0
@@ -130,7 +123,6 @@ autoconfig_add_domain() {
             ;;
     esac
 
-    # Certificate for the web names (non-fatal on failure).
     if [[ "$(comp_get tls)" == "letsencrypt" ]]; then
         tls_issue_web "$domain" || log_warn "the web certificate for ${domain} has not been issued yet."
     fi
@@ -150,7 +142,6 @@ autoconfig_del_domain() {
     if [[ "$(comp_get webserver)" == "nginx" ]]; then nginx_reload_safe; fi
 }
 
-# ---- MTA-STS ----
 mta_sts_write_policy() {
     local domain="$1" mode="${2:-testing}" max_age="${3:-86400}"
     local dir
@@ -199,7 +190,6 @@ cmd_mta_sts_enforce() {
     log_info "MTA-STS raised to enforce. Update the _mta-sts DNS record with a new id."
 }
 
-# ---- CLI ----
 cmd_autoconfig() {
     require_config
     local sub="${1:-regenerate}"
@@ -280,7 +270,6 @@ cmd_test_autoconfig() {
 
     code="$(curl -s -o /dev/null -w '%{http_code}' -X POST --data "$req" \
         "https://autodiscover.${domain}/autodiscover/autodiscover.xml" 2>/dev/null || printf 000)"
-    # Expect 404 for a non-hosted address; test with a bogus domain.
     local badreq badcode
     badreq="${req//${domain}/not-hosted.invalid}"
     badcode="$(curl -s -o /dev/null -w '%{http_code}' -X POST --data "$badreq" \
