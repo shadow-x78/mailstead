@@ -1,0 +1,61 @@
+name: Bug report
+description: Report a problem with Mailstead
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Please do **not** paste secrets, private keys
+        or public IP addresses. Run `mailstead doctor --redact` and attach its
+        output — it masks IP addresses automatically.
+  - type: input
+    id: version
+    attributes:
+      label: Mailstead version
+      description: Output of `mailstead --version`.
+      placeholder: "Mailstead 0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: distro
+    attributes:
+      label: Distribution and version
+      description: e.g. Debian 12, Ubuntu 24.04, AlmaLinux 9, Fedora 41.
+      placeholder: "Debian 12"
+    validations:
+      required: true
+  - type: dropdown
+    id: preset
+    attributes:
+      label: Preset / mode
+      options:
+        - send-only
+        - minimal
+        - standard
+        - full
+        - custom
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Steps to reproduce, expected result, actual result.
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Output of `mailstead doctor --redact`
+      description: Paste the redacted output here.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log lines
+      description: Lines from `/var/log/mailstead/mailstead.log` (no secrets).
+      render: shell
+    validations:
+      required: false

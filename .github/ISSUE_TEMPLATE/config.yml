@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security report (private)
+    url: https://github.com/OWNER/REPO/security/advisories/new
+    about: Please report vulnerabilities privately, not in a public issue.
+  - name: Documentation
+    url: https://github.com/OWNER/REPO/tree/main/docs
+    about: Read the docs (network, autoconfig, signatures, adding a distro).

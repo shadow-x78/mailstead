@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck bats python3
+          # shfmt
+          curl -fsSL -o /tmp/shfmt \
+            https://github.com/mvdan/sh/releases/download/v3.10.0/shfmt_v3.10.0_linux_amd64
+          chmod +x /tmp/shfmt
+          sudo mv /tmp/shfmt /usr/local/bin/shfmt
+
+      - name: shellcheck
+        run: shellcheck -x mailstead install.sh lib/*.sh lib/distro/*.sh phases/*.sh
+
+      - name: shfmt
+        run: shfmt -d -i 4 -ci mailstead install.sh lib/*.sh lib/distro/*.sh phases/*.sh
+
+      - name: python syntax
+        run: python3 -m py_compile scripts/mailstead-sig.py
+
+      - name: bats
+        run: bats tests/*.bats
+
+  integration:
+    # VM integration tests are run manually/nightly (see tests/vm/run.sh).
+    # This job is intentionally a no-op placeholder hook so the matrix is visible.
+    if: false
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "run tests/vm/run.sh on a Tier-1 VM"
