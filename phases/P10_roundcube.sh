@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# phases/P10_roundcube.sh - Roundcube webmail + mail vhost + PHP pool.
 PHASE_REQUIRES="webmail"
 
 phase_P10() {

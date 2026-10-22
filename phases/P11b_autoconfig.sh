@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# phases/P11b_autoconfig.sh - Thunderbird autoconfig + Outlook Autodiscover.
 PHASE_REQUIRES="autoconfig"
 
 phase_P11b() {

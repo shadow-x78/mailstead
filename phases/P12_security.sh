@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# phases/P12_security.sh - firewall, fail2ban, SELinux, logrotate.
 PHASE_REQUIRES=""
 
 phase_P12() {

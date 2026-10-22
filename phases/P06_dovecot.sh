@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# phases/P06_dovecot.sh - Dovecot 2.3 configuration and LMTP/SASL wiring.
 PHASE_REQUIRES="mailbox"
 
 phase_P06() {

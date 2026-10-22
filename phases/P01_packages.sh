@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
-# phases/P01_packages.sh - install packages and create the vmail user.
 PHASE_REQUIRES=""
 
-# _p01_logicals - print the logical package names required by the selection.
 _p01_logicals() {
     printf '%s\n' postfix
     [[ "$(comp_get mailbox)" == "yes" ]] && printf '%s\n' dovecot
@@ -31,14 +29,12 @@ phase_P01() {
 
     pkg_refresh
 
-    # RHEL-family repositories first.
     if [[ "$DISTRO_FAMILY" == "rhel" ]]; then
         pkg_enable_repo epel
         pkg_enable_repo crb
         pkg_enable_repo rspamd
     fi
 
-    # postfix debconf (Debian only) before installing postfix.
     if [[ "$DISTRO_FAMILY" == "debian" ]] && ((!DRY_RUN)); then
         printf 'postfix postfix/main_mailer_type select Internet Site\n' | debconf-set-selections
         printf 'postfix postfix/mailname string %s\n' "$MAIL_HOSTNAME" | debconf-set-selections
@@ -47,8 +43,6 @@ phase_P01() {
     local -a logicals=()
     mapfile -t logicals < <(_p01_logicals)
 
-    # Snapshot which real packages already exist so uninstall only removes what
-    # Mailstead itself added (never pre-existing shared packages).
     local -a reals=() preinstalled=()
     if ((!DRY_RUN)); then
         mapfile -t reals < <(pkgmap_expand "${logicals[@]}" | sort -u)
@@ -66,7 +60,6 @@ phase_P01() {
         mta_set_default
     fi
 
-    # Enable core services now so later phases can reload them.
     [[ "$(comp_get db)" == "mariadb" ]] && svc_enable_now mariadb
     [[ "$(comp_get webserver)" == "nginx" ]] && svc_enable_now nginx
     if [[ "$(comp_get webserver)" == "nginx" || "$(comp_get webmail)" != "none" ]]; then
@@ -78,8 +71,6 @@ phase_P01() {
     log_info "package installation complete."
 }
 
-# _p01_record_installed REALS... -- PREINSTALLED...
-# Persist the packages Mailstead actually added (reals minus pre-existing).
 _p01_record_installed() {
     ((DRY_RUN)) && return 0
     local -a reals=() pre=()

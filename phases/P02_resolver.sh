@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# phases/P02_resolver.sh - local unbound resolver (optional, default yes).
 PHASE_REQUIRES=""
 
 phase_P02() {
@@ -17,7 +16,6 @@ phase_P02() {
         return 0
     fi
     cat >"$conf" <<EOF
-# ${APP_MANAGED_MARK}
 server:
     interface: 127.0.0.1
     access-control: 127.0.0.0/8 allow
@@ -36,13 +34,11 @@ EOF
         return 0
     fi
 
-    # Point the system at 127.0.0.1 with a public fallback.
     backup_file /etc/resolv.conf
     if systemctl is-active --quiet systemd-resolved; then
         systemctl disable --now systemd-resolved 2>/dev/null || true
     fi
     cat >/etc/resolv.conf <<EOF
-# ${APP_MANAGED_MARK}
 nameserver 127.0.0.1
 nameserver 1.1.1.1
 EOF

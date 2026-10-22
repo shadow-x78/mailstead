@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# phases/P09_postfixadmin.sh - dashboard (gui mode).
 PHASE_REQUIRES="dashboard"
 
 phase_P09() {

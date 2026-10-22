@@ -114,7 +114,6 @@ class Sanitizer:
         p = P(convert_charrefs=False)
         p.feed(text)
         p.close()
-        # close any dangling tags
         for tag in reversed(self.open):
             self.parts.append("</%s>" % tag)
 
@@ -125,7 +124,6 @@ class Sanitizer:
                 self.skip_depth += 1
             return
         if tag in FORBIDDEN_TAGS:
-            # Drop the forbidden element and its entire content.
             self.skip_tag = tag
             self.skip_depth = 1
             return
@@ -205,7 +203,6 @@ def sanitize(text):
     return out
 
 
-# ---- Mustache-lite ----
 _SECTION = re.compile(r"\{\{#([A-Z0-9_]+)\}\}(.*?)\{\{/\1\}\}", re.S)
 _VAR = re.compile(r"\{\{([A-Z0-9_]+)\}\}")
 
@@ -253,7 +250,6 @@ def totext(source):
     return t.strip()
 
 
-# ---- image inspection ----
 def inspect_image(path):
     with open(path, "rb") as fh:
         head = fh.read(32)

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# phases/P03_database.sh - MariaDB schema, users, primary domain and admin box.
 PHASE_REQUIRES=""
 
 phase_P03() {

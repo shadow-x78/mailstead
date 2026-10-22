@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# phases/P07_opendkim.sh - OpenDKIM signing keys for the primary domain.
 PHASE_REQUIRES="dkim"
 
 phase_P07() {

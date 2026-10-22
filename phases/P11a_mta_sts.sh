@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# phases/P11a_mta_sts.sh - MTA-STS policy for the primary domain.
 PHASE_REQUIRES="mta-sts"
 
 phase_P11a() {

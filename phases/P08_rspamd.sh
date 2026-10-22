@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# phases/P08_rspamd.sh - Rspamd + Redis (inbound filtering, SPF/DKIM/DMARC).
 PHASE_REQUIRES="spam"
 
 phase_P08() {

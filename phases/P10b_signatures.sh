@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# phases/P10b_signatures.sh - signatures subsystem (plan-3 section F).
 PHASE_REQUIRES="signatures"
 
 phase_P10b() {
@@ -13,7 +12,6 @@ phase_P10b() {
     ensure_dir "$(sig_root)/assets" 0755 root:"$(web_user)"
     ensure_dir "$(sig_root)/rendered" 0750 root:"$(web_user)"
 
-    # Seed the domain profile with defaults for the primary domain.
     local profile
     profile="$(sig_profile_env "$PRIMARY_DOMAIN")"
     if [[ ! -f "$profile" ]]; then
@@ -23,7 +21,6 @@ phase_P10b() {
         sig_env_set "$profile" DIR "ltr"
     fi
 
-    # Render signatures for existing mailboxes.
     local email
     while read -r email; do
         [[ -n "$email" ]] && signatures_render_user "$email"

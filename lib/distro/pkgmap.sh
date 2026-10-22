@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
-# lib/distro/pkgmap.sh - logical package name -> real package names.
-#
-# Naming differences between Debian/Ubuntu and Fedora/RHEL-family are isolated
-# here. Arch and openSUSE are intentionally absent (unsupported in v1).
-# Verify each cell on a VM and record the result with a "# verified on" note.
 
-# pkgmap_get LOGICAL... -> prints space-separated real package names.
 pkgmap_get() {
     local logical fam="${DISTRO_FAMILY:-debian}" out="" name
     for logical in "$@"; do
@@ -18,7 +12,6 @@ pkgmap_get() {
 _pkgmap_one() {
     local logical="$1" fam="$2"
     case "${fam}:${logical}" in
-        # ---- Debian / Ubuntu ----
         debian:postfix) printf 'postfix postfix-mysql postfix-pcre' ;;
         debian:dovecot) printf 'dovecot-core dovecot-imapd dovecot-lmtpd dovecot-mysql dovecot-sieve dovecot-managesieved' ;;
         debian:opendkim) printf 'opendkim opendkim-tools' ;;
@@ -45,7 +38,6 @@ _pkgmap_one() {
         debian:unattended-upgrades) printf 'unattended-upgrades' ;;
         debian:policycoreutils) printf '' ;;
 
-        # ---- Fedora / RHEL-family ----
         rhel:postfix) printf 'postfix postfix-mysql postfix-pcre' ;;
         rhel:dovecot) printf 'dovecot dovecot-mysql dovecot-pigeonhole' ;;
         rhel:opendkim) printf 'opendkim opendkim-tools' ;;
@@ -72,13 +64,10 @@ _pkgmap_one() {
         rhel:unattended-upgrades) printf 'dnf-automatic' ;;
         rhel:policycoreutils) printf 'policycoreutils-python-utils' ;;
 
-        # Unknown logical name: treat it as a real package name (passthrough).
         *) printf '%s' "$logical" ;;
     esac
 }
 
-# pkgmap_expand LOGICAL... -> prints one real package name per line.
-# Safe under the global IFS=$'\n\t' (never relies on space splitting).
 pkgmap_expand() {
     local logical r
     local -a arr=()
@@ -91,7 +80,6 @@ pkgmap_expand() {
     done
 }
 
-# dedupe_lines: read newline-separated input on stdin, print unique lines.
 dedupe_lines() {
     awk '!seen[$0]++'
 }

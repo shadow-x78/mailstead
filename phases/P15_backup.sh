@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# phases/P15_backup.sh - prepare backup directory and optional daily timer.
 PHASE_REQUIRES=""
 
 phase_P15() {

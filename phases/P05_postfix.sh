@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# phases/P05_postfix.sh - Postfix main.cf/master.cf/SQL maps and transport.
 PHASE_REQUIRES=""
 
 phase_P05() {

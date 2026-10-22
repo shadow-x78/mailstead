@@ -1,12 +1,5 @@
 #!/usr/bin/env bash
-# lib/distro/detect.sh - detect the running distribution and family.
-#
-# Sets: DISTRO_ID, DISTRO_VERSION_ID, DISTRO_FAMILY, DISTRO_LIKE, PKG_MGR
-# Rejects unsupported distributions (plan-3 section C) with exit code 3.
 
-# distro_detect [--force-unsupported]
-# Returns 0 when a supported Tier-1 distribution is detected and the family
-# module has been loaded. Exits 3 for explicitly unsupported distributions.
 distro_detect() {
     local force="${1:-}" id="" id_like="" version="" pr_name=""
     local osrel="${OS_RELEASE_FILE:-/etc/os-release}"
@@ -23,7 +16,6 @@ distro_detect() {
     DISTRO_VERSION_ID="${version:-unknown}"
     [[ -z "$pr_name" ]] && pr_name="$DISTRO_ID"
 
-    # Build the set of family hints from ID and ID_LIKE.
     local hints
     hints=" ${DISTRO_ID,,} ${DISTRO_LIKE,,} "
 
@@ -59,7 +51,6 @@ distro_detect() {
             ;;
     esac
 
-    # MAILSTEAD_ALLOW_NO_SYSTEMD=1 is only for unit tests on non-systemd hosts.
     if [[ "${MAILSTEAD_ALLOW_NO_SYSTEMD:-0}" != "1" ]]; then
         if ! command -v systemctl >/dev/null 2>&1 || [[ ! -d /run/systemd/system ]]; then
             die "this system does not run systemd; not supported." "$EX_UNSUPPORTED"
@@ -76,7 +67,6 @@ _unsupported_distro() {
     die "your distro (${pr_name}) is not supported in the first release (v1). Supported: Debian/Ubuntu and Fedora/RHEL-family." "$EX_UNSUPPORTED"
 }
 
-# distro_load_family: source the family abstraction module.
 distro_load_family() {
     local fam="${DISTRO_FAMILY:-}"
     [[ -n "$fam" ]] || die "the family has not been detected yet; run distro_detect first."
@@ -86,7 +76,6 @@ distro_load_family() {
     . "$mod"
 }
 
-# distro_load_pkgmap: source the package map.
 distro_load_pkgmap() {
     local mod="${APP_ROOT}/lib/distro/pkgmap.sh"
     [[ -r "$mod" ]] || die "package map not found: ${mod}"

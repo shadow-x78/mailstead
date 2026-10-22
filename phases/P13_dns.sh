@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# phases/P13_dns.sh - generate and save DNS records for the primary domain.
 PHASE_REQUIRES=""
 
 phase_P13() {

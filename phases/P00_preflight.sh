@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# phases/P00_preflight.sh - environment, hostname and DNS sanity checks.
 PHASE_REQUIRES=""
 
 phase_P00() {

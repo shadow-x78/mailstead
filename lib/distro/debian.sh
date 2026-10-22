@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-# lib/distro/debian.sh - Debian/Ubuntu implementation of the distro interface.
 
-# --- packages ---
 pkg_refresh() {
     if ((DRY_RUN)); then
         log_info "[dry-run] apt-get update"
@@ -10,7 +8,6 @@ pkg_refresh() {
     DEBIAN_FRONTEND=noninteractive apt-get update -qq
 }
 
-# pkg_install LOGICAL...
 pkg_install() {
     local logical
     local -a reals=()
@@ -37,7 +34,6 @@ pkg_install() {
         -o Dpkg::Options::=--force-confold -- "${uniq[@]}"; then
         return 0
     fi
-    # Retry individually so one missing optional package cannot break the run.
     log_warn "batch install failed; retrying package-by-package (skipping optional ones)."
     local p rc=0
     for p in "${uniq[@]}"; do
@@ -50,7 +46,6 @@ pkg_install() {
     return "$rc"
 }
 
-# pkg_installed LOGICAL... (or real package names)
 pkg_installed() {
     local logical r real
     for logical in "$@"; do
@@ -74,19 +69,16 @@ pkg_remove() {
     DEBIAN_FRONTEND=noninteractive apt-get remove -y -- "$@"
 }
 
-# pkg_real_installed REAL - test a concrete (already-translated) package name.
 pkg_real_installed() {
     dpkg-query -W -f='${Status}' "$1" 2>/dev/null | grep -q 'install ok installed'
 }
 
-# pkg_enable_repo epel|rspamd|crb ... -> Debian needs none of these.
 pkg_enable_repo() (
     _repo="$1"
     log_debug "no extra repositories needed on Debian: ${_repo:-}"
     return 0
 )
 
-# --- services ---
 _detect_php_fpm_service() {
     if [[ -n "${_PHP_FPM_SVC:-}" ]]; then
         printf '%s' "$_PHP_FPM_SVC"
@@ -123,7 +115,6 @@ svc_active() { systemctl is-active --quiet "$(svc_name "$1")"; }
 
 web_user() { printf 'www-data'; }
 
-# --- firewall ---
 fw_backend() {
     if command -v ufw >/dev/null 2>&1; then
         printf 'ufw'
@@ -164,14 +155,12 @@ _nft_open() {
         log_info "[dry-run] nft open ${port}/${proto}"
         return 0
     fi
-    # Append into a managed include file the admin wires into nftables.conf.
     if ! grep -q "dport ${port} accept" "$rules" 2>/dev/null; then
         printf 'tcp dport %s accept\n' "$port" >>"$rules"
     fi
     log_info "added opening ${port}/${proto} to ${rules} (make sure it is included in nftables.conf)."
 }
 
-# --- paths ---
 path() {
     case "$1" in
         nginx_conf_d) printf '/etc/nginx/conf.d' ;;

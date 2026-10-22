@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-# lib/distro/rhel.sh - Fedora / RHEL-family (AlmaLinux, Rocky, RHEL) interface.
 
-# --- packages ---
 pkg_refresh() {
     if ((DRY_RUN)); then
         log_info "[dry-run] dnf makecache"
@@ -10,7 +8,6 @@ pkg_refresh() {
     dnf -q makecache
 }
 
-# pkg_install LOGICAL...
 pkg_install() {
     local logical
     local -a reals=()
@@ -69,12 +66,10 @@ pkg_remove() {
     dnf remove -y -- "$@"
 }
 
-# pkg_real_installed REAL - test a concrete (already-translated) package name.
 pkg_real_installed() {
     rpm -q "$1" >/dev/null 2>&1
 }
 
-# pkg_enable_repo epel|crb|rspamd
 pkg_enable_repo() {
     local repo="$1"
     case "$repo" in
@@ -83,7 +78,6 @@ pkg_enable_repo() {
             run dnf install -y epel-release || log_warn "could not install epel-release."
             ;;
         crb)
-            # RHEL/Alma/Rocky: enable the CodeReady/CRB repo for dovecot-pigeonhole etc.
             if ((DRY_RUN)); then
                 log_info "[dry-run] enable crb"
                 return 0
@@ -103,7 +97,6 @@ pkg_enable_repo() {
     esac
 }
 
-# --- services ---
 _detect_kv_service() {
     if systemctl list-unit-files --type=service --no-legend 2>/dev/null | grep -q '^valkey\.service'; then
         printf 'valkey'
@@ -127,7 +120,6 @@ svc_active() { systemctl is-active --quiet "$(svc_name "$1")"; }
 
 web_user() { printf 'nginx'; }
 
-# --- default MTA alternatives (sendmail/exim -> postfix) ---
 mta_set_default() {
     if ((DRY_RUN)); then
         log_info "[dry-run] set default mta to postfix"
@@ -144,7 +136,6 @@ mta_set_default() {
     fi
 }
 
-# --- firewall ---
 fw_backend() {
     if command -v firewall-cmd >/dev/null 2>&1; then
         printf 'firewalld'
@@ -176,7 +167,6 @@ fw_close() {
     firewall-cmd --reload >/dev/null
 }
 
-# --- paths ---
 path() {
     case "$1" in
         nginx_conf_d) printf '/etc/nginx/conf.d' ;;
