@@ -1,0 +1,20 @@
+# Build/runtime artifacts
+*.tar.gz
+*.sha256
+/tmp/
+cache/
+
+# Editor/OS
+.DS_Store
+*.swp
+*~
+
+# Local test scratch
+tests/tmp/
+*.log
+# Python bytecode
+__pycache__/
+*.pyc
+
+# Working spec documents (not part of the shipped repository)
+mailstead-plan-*.md
