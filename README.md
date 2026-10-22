@@ -1,25 +1,24 @@
 <div align="center">
 
 <pre>
-   ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄    │                               
-  █████████████████████   │                               
- ███████████████████████  │                               
- ██▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██  │ ███╗   ███╗ █████╗ ██╗██╗     
- ██ ▀▄▄           ▄▄▀ ██  │ ████╗ ████║██╔══██╗██║██║     
- ██     ▀▄▄   ▄▄▀     ██  │ ██╔████╔██║███████║██║██║     
- ██       ▀▀▀▀▀       ██  │ ██║╚██╔╝██║██╔══██║██║██║     
- ██                   ██  │ ██║ ╚═╝ ██║██║  ██║██║███████╗
- ██                   ██  │ ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝╚══════╝
- ██                   ██  │                               
- ███████████████████████  │                               
-   ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀    │                               
+   ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄    │                             
+ ▄██████████████████████▄  │                             
+███                    ███ │                             
+██████              ██████ │ ██╗   ██╗ █████╗ ██╗██╗     
+███  ███          ███  ███ │ ██║   ██║██╔══██╗██║██║     
+███    ███      ███    ███ │ ███████║███████║██║██║      
+███      ███  ███      ███ │ ██╔══██║██╔══██║██║██║      
+███        ████        ███ │ ██║  ██║██║  ██║██║███████╗ 
+███                    ███ │ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚══════╝ 
+██████████████████████████ │                             
+ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  │                             
 </pre>
 
 # Mailstead
 
 Self-hosted mail server for Debian, Ubuntu, Fedora and RHEL-family systems.
 
-[![Version](https://img.shields.io/badge/version-0.8.3-2563eb?style=for-the-badge&logo=semver)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.8.4-2563eb?style=for-the-badge&logo=semver)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-AGPL--3.0-dc2626?style=for-the-badge&logo=gnu)](LICENSE)
 ![Shell](https://img.shields.io/badge/bash-5.2%2B-16a34a?style=for-the-badge&logo=gnubash)
 ![Platform](https://img.shields.io/badge/platform-Linux-9333ea?style=for-the-badge&logo=linux)
@@ -127,7 +126,7 @@ sudo mailstead doctor                    # consolidated health check
 Releases are distributed as a tarball plus `sha256sum` and a GPG signature. Prefer downloading and verifying over piping a URL into a shell:
 
 ```bash
-VERSION=0.8.3
+VERSION=0.8.4
 BASE="https://github.com/shadow-x78/mailstead/releases/download/v${VERSION}"
 curl -fsSLO "${BASE}/mailstead-${VERSION}.tar.gz"
 curl -fsSLO "${BASE}/mailstead-${VERSION}.tar.gz.sha256"

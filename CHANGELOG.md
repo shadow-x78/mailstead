@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.8.4] - 2026-10-22
+
+### Changed
+
+- The mark is now a thick-outlined envelope with rounded corners and a bold V flap,
+  drawn in the same visual language as the sibling projects: heavy strokes, a vertical
+  divider, and a double-height wordmark.
+- The wordmark uses the box-drawing letterforms shared with the other repositories.
+
+### Fixed
+
+- The banner lost its left padding on the first line because an empty `%b` argument
+  in `printf` suppressed the width; each line is now composed before it is printed.
+
 ## [v0.8.3] - 2026-10-22
 
 ### Changed
