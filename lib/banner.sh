@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 # lib/banner.sh — Mailstead banner (ASCII art + ANSI colors).
 #
-# Usage:
-#   source lib/banner.sh
-#   mailstead_banner            # full banner with colors
-#   mailstead_banner --ascii    # force ASCII (no glyphs)
+# Design: Envelope with V-shaped flap and MAIL text.
+# Uses ONLY ▀█ block chars — renders identically in all terminals.
 
 [ -n "${_MS_BANNER_LOADED:-}" ] && return 0
 _MS_BANNER_LOADED=1
@@ -52,48 +50,50 @@ fi
 # Force ASCII mode
 [ -n "${MS_ASCII:-}" ] && MS_GLYPH_SUPPORT=0
 
-# ── logo lines (filled blocks only — no box-drawing chars) ──────────
+# ── logo lines: envelope with V-flap ──────────────────────────────
 #
-# Design: solid mailbox with MAIL text and a flag sticking to the right.
-# Uses only █▀▄ (full-width block chars) — renders identically in all
-# terminals regardless of font or box-drawing support.
+# Design: Clean envelope with V-shaped top flap.
+# Pure block characters only (▀█) — no box-drawing chars.
+# Related to mail concept (like UMO style).
 #
 if [ "$MS_GLYPH_SUPPORT" -eq 1 ]; then
-    _ms_l1='    ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀'
-    _ms_l2='    █████████████████████'
-    _ms_l3='    ██        MAIL      ██'
-    _ms_l4='    ██                  ██'
-    _ms_l5='    ██                  ██'
-    _ms_l6='    █████████████████████'
-    _ms_l7='    ██                  ██'
-    _ms_l8='    ██                  ██'
-    _ms_l9='    ██                  ██'
-    _ms_l10='    █████████████████████'
-    _ms_l11='    ██   ████  ██  ██'
-    _ms_l12='    ██   ██      ██'
-    _ms_l13='    ██   ██      ██'
-    _ms_l14='    ██   ████  ██  ██'
-    _ms_l15='    ██                  ██'
-    _ms_l16='    ██                  ██'
-    _ms_l17='    ▀▀▀▀▀▀▀     ██  ▀▀▀▀▀▀▀'
+    _ms_l1='    ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀'
+    _ms_l2='    ███████████████████████'
+    _ms_l3='    ██                    ██'
+    _ms_l4='    ██                    ██'
+    _ms_l5='    ██              ██  ██'
+    _ms_l6='    ██            ██  ██  ██'
+    _ms_l7='    ██          ██  ██    ██'
+    _ms_l8='    ██        ██  ██  ██  ██'
+    _ms_l9='    ██      ██  ██    ██  ██'
+    _ms_l10='    ██    ██  ██  MAIL ██  ██'
+    _ms_l11='    ██    ██  ██      ██  ██'
+    _ms_l12='    ██      ██  ██  ██    ██'
+    _ms_l13='    ██        ██  ██  ██  ██'
+    _ms_l14='    ██          ██  ██    ██'
+    _ms_l15='    ██            ██  ██  ██'
+    _ms_l16='    ██              ██  ██'
+    _ms_l17='    ██                    ██'
+    _ms_l18='    ███████████████████████'
 else
-    _ms_l1='    +++++++++++++++++++++++'
-    _ms_l2='    +++++++++++++++++++++++'
-    _ms_l3='    +        MAIL      +'
-    _ms_l4='    +                  +'
-    _ms_l5='    +                  +'
-    _ms_l6='    +++++++++++++++++++++++'
-    _ms_l7='    +                  +'
-    _ms_l8='    +                  +'
-    _ms_l9='    +                  +'
-    _ms_l10='    +++++++++++++++++++++++'
-    _ms_l11='    +   ++++  +  +'
-    _ms_l12='    +   ++      +'
-    _ms_l13='    +   ++      +'
-    _ms_l14='    +   ++++  +  +'
-    _ms_l15='    +                  +'
-    _ms_l16='    +                  +'
-    _ms_l17='    ++++      ++    ++++'
+    _ms_l1='    +++++++++++++++++++++++++++'
+    _ms_l2='    +++++++++++++++++++++++++++'
+    _ms_l3='    +                          +'
+    _ms_l4='    +                          +'
+    _ms_l5='    +                    ++    +'
+    _ms_l6='    +                  ++ ++   +'
+    _ms_l7='    +                ++ ++     +'
+    _ms_l8='    +              ++ ++ ++    +'
+    _ms_l9='    +            ++ ++         +'
+    _ms_l10='    +          ++ ++   MAIL ++ +'
+    _ms_l11='    +          ++ ++       ++ +'
+    _ms_l12='    +            ++ ++ ++    +'
+    _ms_l13='    +              ++ ++ ++    +'
+    _ms_l14='    +                ++ ++     +'
+    _ms_l15='    +                  ++ ++   +'
+    _ms_l16='    +                    ++    +'
+    _ms_l17='    +                          +'
+    _ms_l18='    +++++++++++++++++++++++++++'
 fi
 
 # ── terminal column count ──────────────────────────────────────────
@@ -107,13 +107,13 @@ _ms_term_cols() {
 
 # ── full banner ───────────────────────────────────────────────────
 mailstead_banner() {
-    local _ms_cols="${1:-$(ms_term_cols)}"
+    local _ms_cols="${1:-$(_ms_term_cols)}"
     _ms_cols="${_ms_cols:-80}"
 
     # Find the widest logo line
     local _ms_max=0
     local _ms_L
-    for _ms_L in "$_ms_l1" "$_ms_l2" "$_ms_l3" "$_ms_l4" "$_ms_l5" "$_ms_l6" "$_ms_l7" "$_ms_l8" "$_ms_l9" "$_ms_l10" "$_ms_l11" "$_ms_l12" "$_ms_l13" "$_ms_l14" "$_ms_l15" "$_ms_l16" "$_ms_l17"; do
+    for _ms_L in "$_ms_l1" "$_ms_l2" "$_ms_l3" "$_ms_l4" "$_ms_l5" "$_ms_l6" "$_ms_l7" "$_ms_l8" "$_ms_l9" "$_ms_l10" "$_ms_l11" "$_ms_l12" "$_ms_l13" "$_ms_l14" "$_ms_l15" "$_ms_l16" "$_ms_l17" "$_ms_l18"; do
         local _ms_w=${#_ms_L}
         [ "$_ms_w" -gt "$_ms_max" ] && _ms_max=$_ms_w
     done
@@ -122,7 +122,7 @@ mailstead_banner() {
     local _ms_pad=$(( (_ms_cols - _ms_max) / 2 ))
     [ "$_ms_pad" -lt 0 ] && _ms_pad=0
 
-    for _ms_L in "$_ms_l1" "$_ms_l2" "$_ms_l3" "$_ms_l4" "$_ms_l5" "$_ms_l6" "$_ms_l7" "$_ms_l8" "$_ms_l9" "$_ms_l10" "$_ms_l11" "$_ms_l12" "$_ms_l13" "$_ms_l14" "$_ms_l15" "$_ms_l16" "$_ms_l17"; do
+    for _ms_L in "$_ms_l1" "$_ms_l2" "$_ms_l3" "$_ms_l4" "$_ms_l5" "$_ms_l6" "$_ms_l7" "$_ms_l8" "$_ms_l9" "$_ms_l10" "$_ms_l11" "$_ms_l12" "$_ms_l13" "$_ms_l14" "$_ms_l15" "$_ms_l16" "$_ms_l17" "$_ms_l18"; do
         printf "${MS_COLOR_PRIMARY}%*s${_ms_L}${MS_NC}\n" "$_ms_pad" ''
     done
     printf '\n'
@@ -143,6 +143,3 @@ mailstead_banner() {
     [ "$_ms_apad" -lt 0 ] && _ms_apad=0
     printf "${MS_COLOR_MUTED}%*s${_ms_auth}${MS_NC}\n\n" "$_ms_apad" ''
 }
-
-# ── shorthand ─────────────────────────────────────────────────────
-ms_term_cols() { _ms_term_cols; }
