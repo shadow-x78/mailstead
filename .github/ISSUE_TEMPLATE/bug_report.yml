@@ -13,7 +13,7 @@ body:
     attributes:
       label: Mailstead version
       description: Output of `mailstead --version`.
-      placeholder: "Mailstead 0.3.0"
+      placeholder: "Mailstead 0.4.0"
     validations:
       required: true
   - type: input
