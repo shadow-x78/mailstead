@@ -289,7 +289,7 @@ cmd_test_autoconfig() {
     if [[ -n "$srv" ]]; then printf '  ✔ SRV _autodiscover: %s\n' "$srv"; else printf '  ✘ SRV _autodiscover missing\n'; fi
 
     if ((fail)); then
-        log_warn "see docs/autoconfig.md. The mandatory test: desktop Outlook on Windows."
+        log_warn "see docs/AUTOCONFIG.md. The mandatory test: desktop Outlook on Windows."
         return "$EX_ERR"
     fi
     log_info "all autoconfig/autodiscover checks passed."

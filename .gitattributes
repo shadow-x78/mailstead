@@ -1,0 +1,7 @@
+# ─────────────────────────────────────────────
+# Mailstead - Git Attributes
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
+templates/**/*.tpl  linguist-detectable=false
+*.md                linguist-detectable=true

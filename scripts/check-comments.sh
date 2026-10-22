@@ -43,7 +43,7 @@ collect_files() {
     find "$root/.github/workflows" -type f -name '*.yml' -print
     find "$root/.github/ISSUE_TEMPLATE" -type f -name '*.yml' -print
     printf '%s\n' "$root/mailstead" "$root/install.sh"
-    printf '%s\n' "$root/.editorconfig" "$root/.shellcheckrc" "$root/.gitignore"
+    printf "%s\n" "$root/.editorconfig" "$root/.shellcheckrc" "$root/.gitignore" "$root/.gitattributes"
 }
 
 # ── Block Style Check ──
