@@ -10,12 +10,17 @@ cache/
 
 # Editor/OS
 .DS_Store
+Thumbs.db
 *.swp
+*.swo
 *~
+*.orig
+*.rej
 
 # Local test scratch
 tests/tmp/
 *.log
+
 # Python bytecode
 __pycache__/
 *.pyc

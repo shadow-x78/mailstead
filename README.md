@@ -106,10 +106,12 @@ sudo mailstead doctor                    # consolidated health check
 Releases are distributed as a tarball plus `sha256sum` and a GPG signature. Prefer downloading and verifying over piping a URL into a shell:
 
 ```bash
-curl -fsSLO https://example.invalid/mailstead-<version>.tar.gz
-curl -fsSLO https://example.invalid/mailstead-<version>.tar.gz.sha256
-sha256sum -c mailstead-<version>.tar.gz.sha256
-# optionally: gpg --verify mailstead-<version>.tar.gz.asc mailstead-<version>.tar.gz
+VERSION=0.1.0
+BASE="https://github.com/shadow-x78/mailstead/releases/download/v${VERSION}"
+curl -fsSLO "${BASE}/mailstead-${VERSION}.tar.gz"
+curl -fsSLO "${BASE}/mailstead-${VERSION}.tar.gz.sha256"
+sha256sum -c "mailstead-${VERSION}.tar.gz.sha256"
+# optionally: gpg --verify "mailstead-${VERSION}.tar.gz.asc" "mailstead-${VERSION}.tar.gz"
 ```
 
 <a id="cli-overview"></a>
