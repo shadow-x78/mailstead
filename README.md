@@ -4,7 +4,7 @@
 
 Self-hosted mail server for Debian, Ubuntu, Fedora and RHEL-family systems.
 
-[![Version](https://img.shields.io/badge/version-0.1.0-2563eb?style=for-the-badge&logo=semver)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.6.0-2563eb?style=for-the-badge&logo=semver)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-GPL--3.0-dc2626?style=for-the-badge&logo=gnu)](LICENSE)
 ![Shell](https://img.shields.io/badge/bash-5.2%2B-16a34a?style=for-the-badge&logo=gnubash)
 ![Platform](https://img.shields.io/badge/platform-Linux-9333ea?style=for-the-badge&logo=linux)
