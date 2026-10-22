@@ -5,6 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.8.5] - 2026-10-22
+
+### Fixed
+
+- `status` and `doctor` aborted when an optional component was absent, because a
+  conditional was the last statement of `_core_services` and returned 1 under
+  `set -e`. It now returns 0 explicitly.
+- `queue` counted the queue as `0\n0` under `pipefail`, which broke the arithmetic
+  in `doctor`; the count now goes through `queue_depth`, which sanitises the value.
+- `queue list` reported a raw `command not found` when Postfix is absent; it now
+  says Postfix is not present.
+- `test-tls` could hang forever on a filtered port: `openssl s_client` and `curl`
+  now run under a 10-second timeout.
+- Commands aborted with an `unexpected failure` message whenever a `dig`, `grep`,
+  `openssl` or `postqueue` pipeline returned non-zero under `pipefail`; every such
+  assignment now tolerates the failure (`dns-check`, `doctor`, `status`,
+  `add-domain`, `dkim-show`, `dkim-rotate`, `sig preview`, `test-autoconfig`).
+- `dkim-show` and `dkim-rotate` treated a missing record as a crash; it is now a
+  warning with a zero exit.
+- `cert-status` reported a missing certificate as an unexpected failure; it now
+  prints one clear error.
+- `confirm` printed a shell error when `/dev/tty` could not be opened, and
+  `upgrade-web` then reported "cancelled" instead of explaining there was no
+  terminal.
+- `list` surfaced a raw MySQL error when the database was down; it now checks the
+  connection first and says MariaDB is unreachable.
+- `ensure_dir` failed when the owning group did not exist yet (for example `nginx`
+  before the web server is installed); it falls back to the user's primary group.
+- `logs` and `status` read `/var/log/mail.log` on every distribution; the path now
+  comes from the distro abstraction, so Fedora/RHEL use `/var/log/maillog`.
+- `install.sh` exited 0 after failing to create the `/usr/local/bin` symlink; it
+  now fails with an actionable message.
+- Read-only subcommands (`sig template`, `sig preview`, `components list`,
+  `queue list`) demanded root. They now run as an ordinary user, and
+  `sig template list|show` no longer requires a configuration.
+
 ## [v0.8.4] - 2026-10-22
 
 ### Changed

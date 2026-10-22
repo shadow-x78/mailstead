@@ -165,9 +165,12 @@ cmd_test_tls() {
     require_config
     local host="${1:-$MAIL_HOSTNAME}"
     header "TLS check for ${host}"
-    (openssl s_client -starttls smtp -connect "${host}:25" -brief </dev/null) 2>&1 | grep -Ei 'protocol|verify|cipher' || true
+    local tmo=10
+    (timeout "$tmo" openssl s_client -starttls smtp -connect "${host}:25" -brief </dev/null) 2>&1 |
+        grep -Ei 'protocol|verify|cipher' || true
     echo '---'
-    (openssl s_client -connect "${host}:993" -brief </dev/null) 2>&1 | grep -Ei 'protocol|verify|cipher' || true
+    (timeout "$tmo" openssl s_client -connect "${host}:993" -brief </dev/null) 2>&1 |
+        grep -Ei 'protocol|verify|cipher' || true
     echo '---'
-    curl -sS -I "https://${host}" | head -n 5 || true
+    curl -sS --max-time "$tmo" -I "https://${host}" 2>&1 | head -n 5 || true
 }

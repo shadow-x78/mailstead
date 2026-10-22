@@ -285,7 +285,7 @@ cmd_test_autoconfig() {
     fi
 
     local srv
-    srv="$(dig +short SRV "_autodiscover._tcp.${domain}" 2>/dev/null | tr '\n' ' ')"
+    srv="$(dig +short SRV "_autodiscover._tcp.${domain}" 2>/dev/null | tr '\n' ' ' || true)"
     if [[ -n "$srv" ]]; then printf '  ✔ SRV _autodiscover: %s\n' "$srv"; else printf '  ✘ SRV _autodiscover missing\n'; fi
 
     if ((fail)); then

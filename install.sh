@@ -30,7 +30,10 @@ done
 
 chmod 0755 "${APP_OPT}/mailstead"
 install -d -m 0755 /usr/local/bin
-ln -sfn "${APP_OPT}/mailstead" "/usr/local/bin/${APP_CMD}"
+if ! ln -sfn "${APP_OPT}/mailstead" "/usr/local/bin/${APP_CMD}"; then
+    echo "could not link ${APP_CMD} into /usr/local/bin; add ${APP_OPT} to PATH instead." >&2
+    exit 1
+fi
 
 echo "done. the command is available: ${APP_CMD} --help"
 echo "next: ${APP_CMD} install --domain example.com --admin-email admin@example.com"

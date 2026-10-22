@@ -29,6 +29,8 @@ db_sql_root() {
         log_info "[dry-run] mysql -e <sql>"
         return 0
     fi
+    command -v mysql >/dev/null 2>&1 ||
+        die "the mysql client is not installed; MariaDB is not present." "$EX_ERR"
     mysql --protocol=socket -N -B -e "$sql"
 }
 
@@ -38,7 +40,17 @@ db_sql_root_db() {
         log_info "[dry-run] mysql ${db} -e <sql>"
         return 0
     fi
+    command -v mysql >/dev/null 2>&1 ||
+        die "the mysql client is not installed; MariaDB is not present." "$EX_ERR"
     mysql --protocol=socket -N -B -D "$db" -e "$sql"
+}
+
+db_require() {
+    ((DRY_RUN)) && return 0
+    command -v mysql >/dev/null 2>&1 ||
+        die "the mysql client is not installed; MariaDB is not present." "$EX_ERR"
+    mysql --protocol=socket -N -B -e 'SELECT 1' >/dev/null 2>&1 ||
+        die "cannot connect to MariaDB; is the database running?" "$EX_ERR"
 }
 
 db_query() {

@@ -6,6 +6,15 @@
 
 # shellcheck shell=bash
 
+queue_depth() {
+    local n=0
+    if command -v postqueue >/dev/null 2>&1; then
+        n="$(postqueue -j 2>/dev/null | wc -l || true)"
+        n="${n//[!0-9]/}"
+    fi
+    printf '%s' "${n:-0}"
+}
+
 _core_services() {
     printf '%s\n' postfix
     [[ "$(comp_get mailbox)" == "yes" ]] && printf '%s\n' dovecot
@@ -15,6 +24,7 @@ _core_services() {
     [[ "$(comp_get spam)" == "rspamd" ]] && printf '%s\n' "$(svc_name kv)"
     [[ "$(comp_get webserver)" == "nginx" ]] && printf '%s\n' nginx
     [[ "$(comp_get fail2ban)" == "yes" ]] && printf '%s\n' fail2ban
+    return 0
 }
 
 cmd_status() {
@@ -28,7 +38,7 @@ cmd_status() {
     done < <(_core_services)
 
     local q
-    q="$(postqueue -j 2>/dev/null | wc -l || printf 0)"
+    q="$(queue_depth)"
     printf '\nQueue: %s messages\n' "$q"
 
     if command -v openssl >/dev/null 2>&1; then
@@ -36,7 +46,7 @@ cmd_status() {
         cert="$(state_get TLS_CERT_FILE 2>/dev/null || printf '')"
         if [[ -n "$cert" && -r "$cert" ]]; then
             local end
-            end="$(openssl x509 -in "$cert" -noout -enddate 2>/dev/null | cut -d= -f2)"
+            end="$(openssl x509 -in "$cert" -noout -enddate 2>/dev/null | cut -d= -f2 || true)"
             printf 'certificate expiry: %s\n' "$end"
         fi
     fi
@@ -47,15 +57,19 @@ cmd_status() {
         printf '\nSize of /var/vmail: %s\n' "$(du -sh /var/vmail 2>/dev/null | awk '{print $1}')"
     fi
 
-    printf '\nLast 5 error lines from mail.log:\n'
-    grep -iE 'error|fatal|reject' /var/log/mail.log 2>/dev/null | tail -n 5 || printf '  (none)\n'
+    printf '\nLast 5 error lines from %s:\n' "$(path mail_log)"
+    grep -iE 'error|fatal|reject' "$(path mail_log)" 2>/dev/null | tail -n 5 || printf '  (none)\n'
 }
 
 cmd_queue() {
     require_config
     local sub="${1:-list}"
     case "$sub" in
-        list) postqueue -p ;;
+        list)
+            command -v postqueue >/dev/null 2>&1 ||
+                die "postqueue is not installed; Postfix is not present." "$EX_ERR"
+            postqueue -p
+            ;;
         flush) run postqueue -f ;;
         delete-all)
             confirm "delete all messages in the queue permanently?" || die "cancelled."
@@ -87,7 +101,7 @@ cmd_logs() {
     done
     local file
     case "$which" in
-        postfix) file="/var/log/mail.log" ;;
+        postfix) file="$(path mail_log)" ;;
         dovecot) file="/var/log/dovecot.log" ;;
         rspamd) file="/var/log/rspamd/rspamd.log" ;;
         nginx) file="/var/log/nginx/error.log" ;;
@@ -174,14 +188,14 @@ cmd_doctor() {
     fi
 
     local q
-    q="$(postqueue -j 2>/dev/null | wc -l || printf 0)"
+    q="$(queue_depth)"
     if ((q > 100)); then
         printf '  ✘ the queue is large (%s)\n' "$q"
         issues=$((issues + 1))
     else printf '  ✔ queue %s\n' "$q"; fi
 
     local ptr
-    ptr="$(dig +short -x "$(dns_domain_ip4)" 2>/dev/null | tr -d '.' | tr '\n' ' ')"
+    ptr="$(dig +short -x "$(dns_domain_ip4)" 2>/dev/null | tr -d '.' | tr '\n' ' ' || true)"
     if [[ "$ptr" == *"$MAIL_HOSTNAME"* ]]; then printf '  ✔ PTR ok\n'; else
         printf '  ✘ PTR does not match %s\n' "$(redact_value "$MAIL_HOSTNAME")"
         issues=$((issues + 1))
@@ -216,12 +230,12 @@ cmd_doctor() {
         return 0
     fi
     log_warn "number of warnings: ${issues}"
-    return 1
+    exit "$EX_ERR"
 }
 
 _cert_days_left() {
     local crt="$1" end epoch now
-    end="$(openssl x509 -in "$crt" -noout -enddate 2>/dev/null | cut -d= -f2)"
+    end="$(openssl x509 -in "$crt" -noout -enddate 2>/dev/null | cut -d= -f2 || true)"
     epoch="$(date -d "$end" +%s 2>/dev/null || printf 0)"
     now="$(date +%s)"
     printf '%s' "$(((epoch - now) / 86400))"
@@ -243,7 +257,7 @@ doctor_dnsbl() {
     local rev
     rev="$(printf '%s' "$ip" | awk -F. '{print $4"."$3"."$2"."$1}')"
     local res
-    res="$(dig +short "${rev}.zen.spamhaus.org" 2>/dev/null | head -n1)"
+    res="$(dig +short "${rev}.zen.spamhaus.org" 2>/dev/null | head -n1 || true)"
     case "$res" in
         127.0.0.1* | 127.0.0.2* | 127.0.0.3*) log_warn "IP is listed in Spamhaus: ${res}" ;;
         127.255.255.*) log_warn "DNSBL query refused (disallowed source); use the local unbound." ;;

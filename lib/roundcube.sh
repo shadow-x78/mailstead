@@ -36,7 +36,7 @@ roundcube_configure() {
     tmp="$(mktemp -d)"
     tar -xzf "$cache" -C "$tmp"
     local inner
-    inner="$(find "$tmp" -mindepth 1 -maxdepth 1 -type d | head -n1)"
+    inner="$(find "$tmp" -mindepth 1 -maxdepth 1 -type d | head -n1 || true)"
     [[ -n "$inner" ]] || die "unexpected tarball layout for Roundcube."
     ensure_dir "$dir" 0755 root:root
     cp -a "${inner}/." "$dir/"
@@ -128,7 +128,7 @@ cmd_upgrade_web() {
     fi
     tmp="$(mktemp -d)"
     tar -xzf "$cache" -C "$tmp"
-    inner="$(find "$tmp" -mindepth 1 -maxdepth 1 -type d | head -n1)"
+    inner="$(find "$tmp" -mindepth 1 -maxdepth 1 -type d | head -n1 || true)"
     (cd "$dir" && php bin/installto.sh "$inner") || log_warn "installto.sh finished with a warning."
     rm -rf "$tmp"
     roundcube_permissions

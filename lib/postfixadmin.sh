@@ -30,7 +30,7 @@ postfixadmin_configure() {
     local tmp inner
     tmp="$(mktemp -d)"
     tar -xzf "$cache" -C "$tmp"
-    inner="$(find "$tmp" -mindepth 1 -maxdepth 1 -type d | head -n1)"
+    inner="$(find "$tmp" -mindepth 1 -maxdepth 1 -type d | head -n1 || true)"
     [[ -n "$inner" ]] || die "unexpected tarball layout for PostfixAdmin."
     ensure_dir "$dir" 0755 root:root
     cp -a "${inner}/." "$dir/"

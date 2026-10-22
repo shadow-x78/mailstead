@@ -129,7 +129,7 @@ dkim_record_string() {
     txt="$(dkim_key_dir "$domain")/${sel}.txt"
     [[ -r "$txt" ]] || return 1
     local parts
-    parts="$(grep -o '"[^"]*"' "$txt" | tr -d '"' | tr -d '\n')"
+    parts="$(grep -o '"[^"]*"' "$txt" | tr -d '"' | tr -d '\n' || true)"
     printf '%s' "$parts"
 }
 
@@ -149,10 +149,10 @@ dkim_rotate() {
 dkim_print_txt() {
     local domain="$1" sel="${2:-$(dkim_selector "$1")}"
     local rec
-    rec="$(dkim_record_string "$domain" "$sel")" || {
+    if ! rec="$(dkim_record_string "$domain" "$sel")"; then
         log_warn "no DKIM record for ${domain}"
-        return 1
-    }
+        return 0
+    fi
     printf '%s._domainkey.%s. TXT "%s"\n' "$sel" "$domain" "$rec"
     printf '%s._domainkey.%s. TXT (\n' "$sel" "$domain"
     printf '%s' "$rec" | fold -w 255 | awk '{printf "  \"%s\"\n", $0}'

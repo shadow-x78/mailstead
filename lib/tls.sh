@@ -131,7 +131,7 @@ tls_issue_web() {
     local -a dargs=()
     for n in "${names[@]}"; do
         local ip
-        ip="$(dig +short "$n" A 2>/dev/null | tail -n1)"
+        ip="$(dig +short "$n" A 2>/dev/null | tail -n1 || true)"
         if [[ -z "$ip" ]]; then
             log_warn "no A/CNAME record for ${n}. Issue the certificate later with: ${APP_CMD} cert-issue --web ${domain}"
             return 1
@@ -251,7 +251,7 @@ cmd_cert_issue() {
                 STAGING=1
                 shift
                 ;;
-            *) die "unknown option for cert-issue: $1" "$EX_USAGE" ;;
+            *) die "unknown option for cert-issue: $1 (accepted: --web DOMAIN, --staging)" "$EX_USAGE" ;;
         esac
     done
     require_config
@@ -285,13 +285,12 @@ cmd_cert_status() {
     tls_set_paths "$host"
     crt="${TLS_CERT_FILE:-}"
     if [[ ! -r "$crt" ]]; then
-        log_warn "no readable certificate at ${crt}"
-        return "$EX_ERR"
+        die "no readable certificate at ${crt}" "$EX_ERR"
     fi
     header "Certificate status (${host})"
     openssl x509 -in "$crt" -noout -subject -issuer -dates -ext subjectAltName 2>/dev/null || true
     local end epoch now days
-    end="$(openssl x509 -in "$crt" -noout -enddate 2>/dev/null | cut -d= -f2)"
+    end="$(openssl x509 -in "$crt" -noout -enddate 2>/dev/null | cut -d= -f2 || true)"
     epoch="$(date -d "$end" +%s 2>/dev/null || printf 0)"
     now="$(date +%s)"
     days=$(((epoch - now) / 86400))

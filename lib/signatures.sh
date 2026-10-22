@@ -166,7 +166,7 @@ sig_image_add() {
         png) ext=png ;; gif) ext=gif ;; jpg) ext=jpg ;;
         *) die "unsupported image type: ${typ}" ;;
     esac
-    sha="$(sha256sum "$file" | cut -c1-16)"
+    sha="$(sha256sum "$file" | cut -c1-16 || true)"
     dest="$(sig_assets_dir "$domain")/${sha}.${ext}"
     ensure_dir "$(sig_assets_dir "$domain")" 0755 root:"$(web_user)"
     if ((DRY_RUN)); then
@@ -264,9 +264,13 @@ cmd_sig_server() {
 }
 
 cmd_sig() {
-    require_config
     local sub="${1:-}"
     shift || true
+    # Listing and showing the shipped templates needs no configuration.
+    case "$sub" in
+        template) ;;
+        *) require_config ;;
+    esac
     case "$sub" in
         template)
             local what="${1:-list}"
@@ -497,8 +501,8 @@ sig_quality_checks() {
     html="$(sig_rendered_dir "$domain")/${local_part}.html"
     [[ -r "$html" ]] || return 0
     local text_len links
-    text_len="$(python3 "$(sig_py)" totext "$html" | tr -d '[:space:]' | wc -c)"
-    links="$(grep -o 'href=' "$html" | wc -l)"
+    text_len="$(python3 "$(sig_py)" totext "$html" | tr -d '[:space:]' | wc -c || true)"
+    links="$(grep -o 'href=' "$html" | wc -l || true)"
     if ((text_len < 20)); then log_warn "signature for ${local_part} is nearly text-free (spam warning)."; fi
     if ((links > 5)); then log_warn "the signature for ${local_part} has more than 5 links."; fi
     if grep -qE 'bit\.ly|t\.co|goo\.gl|tinyurl' "$html"; then log_warn "short links in the signature for ${local_part}."; fi

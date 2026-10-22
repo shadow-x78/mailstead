@@ -10,7 +10,7 @@ postfix_sql_dir() { printf '%s/sql' "$(path postfix_conf)"; }
 
 postfix_compat_vars() {
     local v major minor
-    v="$(postconf -h mail_version 2>/dev/null | awk '{print $1}')"
+    v="$(postconf -h mail_version 2>/dev/null | awk '{print $1}' || true)"
     [[ -n "$v" ]] || v="0"
     major="${v%%.*}"
     minor="${v#*.}"
@@ -118,9 +118,11 @@ postfix_configure() {
 
 postfix_ensure_logs() {
     ((DRY_RUN)) && return 0
-    touch /var/log/mail.log 2>/dev/null || true
-    chown postfix:adm /var/log/mail.log 2>/dev/null || chown postfix:postfix /var/log/mail.log 2>/dev/null || true
-    chmod 0640 /var/log/mail.log 2>/dev/null || true
+    local log
+    log="$(path mail_log)"
+    touch "$log" 2>/dev/null || true
+    chown postfix:adm "$log" 2>/dev/null || chown postfix:postfix "$log" 2>/dev/null || true
+    chmod 0640 "$log" 2>/dev/null || true
 }
 
 postfix_master_configure() {

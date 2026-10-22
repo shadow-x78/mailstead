@@ -28,6 +28,10 @@ ensure_dir() {
         return 0
     fi
     local u="${owner%%:*}" g="${owner##*:}"
+    # The group may not exist before the owning package is installed.
+    if ! getent group "$g" >/dev/null 2>&1; then
+        g="$(id -gn "$u" 2>/dev/null || printf 'root')"
+    fi
     install -d -m "$mode" -o "$u" -g "$g" -- "$dir"
 }
 
@@ -91,7 +95,7 @@ detect_public_ip4() {
     local ip=""
     if ((${OFFLINE:-0})); then
         if command -v ip >/dev/null 2>&1; then
-            ip="$(ip route get 1.1.1.1 2>/dev/null | awk '/src/{for(i=1;i<=NF;i++) if($i=="src") print $(i+1)}' | head -n1)"
+            ip="$(ip route get 1.1.1.1 2>/dev/null | awk '/src/{for(i=1;i<=NF;i++) if($i=="src") print $(i+1)}' | head -n1 || true)"
         fi
         printf '%s' "$ip"
         return 0
@@ -100,7 +104,7 @@ detect_public_ip4() {
         ip="$(curl -4 -fsS --max-time 8 https://api.ipify.org 2>/dev/null || true)"
     fi
     if [[ -z "$ip" ]] && command -v ip >/dev/null 2>&1; then
-        ip="$(ip route get 1.1.1.1 2>/dev/null | awk '/src/{for(i=1;i<=NF;i++) if($i=="src") print $(i+1)}' | head -n1)"
+        ip="$(ip route get 1.1.1.1 2>/dev/null | awk '/src/{for(i=1;i<=NF;i++) if($i=="src") print $(i+1)}' | head -n1 || true)"
     fi
     printf '%s' "$ip"
 }

@@ -91,31 +91,31 @@ dns_check() {
     for r in "${DNS_PUBLIC_RESOLVERS[@]}"; do
         printf -- '-- resolver %s --\n' "$r"
 
-        got="$(dns_query "$host" A "$r" | tr '\n' ' ')"
+        got="$(dns_query "$host" A "$r" | tr '\n' ' ' || true)"
         if [[ "$got" == *"$ip4"* && -n "$ip4" ]]; then _dns_ok "A(${host}) = ${ip4}"; else
             _dns_bad "A(${host}): expected ${ip4}, got '${got}'"
             fail=1
         fi
 
-        got="$(dns_query "$domain" MX "$r" | tr '\n' ' ')"
+        got="$(dns_query "$domain" MX "$r" | tr '\n' ' ' || true)"
         if [[ "$got" == *"$host"* ]]; then _dns_ok "MX(${domain}) points to ${host}"; else
             _dns_bad "MX(${domain}): '${got}'"
             fail=1
         fi
 
-        got="$(dns_query "$domain" TXT "$r" | tr '\n' ' ')"
+        got="$(dns_query "$domain" TXT "$r" | tr '\n' ' ' || true)"
         if [[ "$got" == *"v=spf1"* ]]; then _dns_ok "SPF(${domain}) present"; else
             _dns_bad "SPF(${domain}) missing"
             fail=1
         fi
         local spf_count
-        spf_count="$(printf '%s' "$got" | grep -o 'v=spf1' | wc -l)"
+        spf_count="$(printf '%s' "$got" | grep -o 'v=spf1' | wc -l || true)"
         if ((spf_count > 1)); then
             _dns_bad "more than one SPF record (${spf_count})"
             fail=1
         fi
 
-        got="$(dns_query "${sel}._domainkey.${domain}" TXT "$r" | tr -d '"' | tr '\n' ' ')"
+        got="$(dns_query "${sel}._domainkey.${domain}" TXT "$r" | tr -d '"' | tr '\n' ' ' || true)"
         if [[ -n "$rec" && "$got" == *"$(printf '%s' "$rec" | tr -d ' ' | cut -c1-40)"* ]]; then
             _dns_ok "DKIM(${sel}) matches"
         else
@@ -123,7 +123,7 @@ dns_check() {
             fail=1
         fi
 
-        got="$(dns_query "_dmarc.${domain}" TXT "$r" | tr '\n' ' ')"
+        got="$(dns_query "_dmarc.${domain}" TXT "$r" | tr '\n' ' ' || true)"
         if [[ "$got" == *"v=DMARC1"* ]]; then _dns_ok "DMARC present"; else
             _dns_bad "DMARC missing"
             fail=1
@@ -131,33 +131,33 @@ dns_check() {
 
         if [[ "$(comp_get autoconfig)" != "none" ]]; then
             for h in autoconfig autodiscover; do
-                got="$(dns_query "${h}.${domain}" A "$r" | tr '\n' ' ')"
+                got="$(dns_query "${h}.${domain}" A "$r" | tr '\n' ' ' || true)"
                 if [[ "$got" == *"$ip4"* && -n "$ip4" ]]; then _dns_ok "A(${h}.${domain})"; else
                     _dns_bad "A(${h}.${domain})"
                     fail=1
                 fi
             done
-            got="$(dns_query "_autodiscover._tcp.${domain}" SRV "$r" | tr '\n' ' ')"
+            got="$(dns_query "_autodiscover._tcp.${domain}" SRV "$r" | tr '\n' ' ' || true)"
             if [[ "$got" == *"autodiscover"* ]]; then _dns_ok "SRV _autodiscover._tcp"; else
                 _dns_bad "SRV _autodiscover._tcp missing"
                 fail=1
             fi
         fi
         if [[ "$(comp_get mta-sts)" == "yes" ]]; then
-            got="$(dns_query "_mta-sts.${domain}" TXT "$r" | tr '\n' ' ')"
+            got="$(dns_query "_mta-sts.${domain}" TXT "$r" | tr '\n' ' ' || true)"
             if [[ "$got" == *"v=STSv1"* ]]; then _dns_ok "MTA-STS TXT"; else
                 _dns_bad "MTA-STS TXT missing"
                 fail=1
             fi
         fi
-        got="$(dns_query "_submission._tcp.${domain}" SRV "$r" | tr '\n' ' ')"
+        got="$(dns_query "_submission._tcp.${domain}" SRV "$r" | tr '\n' ' ' || true)"
         if [[ "$got" == *"587"* ]]; then _dns_ok "SRV _submission._tcp"; else _dns_bad "SRV _submission._tcp missing"; fi
-        got="$(dns_query "$domain" CAA "$r" | tr '\n' ' ')"
+        got="$(dns_query "$domain" CAA "$r" | tr '\n' ' ' || true)"
         if [[ "$got" == *"letsencrypt"* ]]; then _dns_ok "CAA letsencrypt"; else _dns_bad "CAA missing"; fi
     done
 
     local ptr
-    ptr="$(dig +short -x "$ip4" 2>/dev/null | tr -d '.' | tr '\n' ' ')"
+    ptr="$(dig +short -x "$ip4" 2>/dev/null | tr -d '.' | tr '\n' ' ' || true)"
     if [[ "$ptr" == *"$host"* ]]; then _dns_ok "PTR(IP) = ${host}"; else
         _dns_bad "PTR(IP) does not match ${host}: '${ptr}'"
         fail=1
@@ -165,7 +165,7 @@ dns_check() {
 
     if ((fail)); then
         log_warn "some records are missing or do not match. Publish them, then re-check."
-        return "$EX_ERR"
+        exit "$EX_ERR"
     fi
     log_info "all checked records are correct."
 }

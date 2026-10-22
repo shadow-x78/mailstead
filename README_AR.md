@@ -18,7 +18,7 @@
 
 خادم بريد مستضاف ذاتياً لأنظمة Debian و Ubuntu و Fedora وعائلة RHEL.
 
-[![الإصدار](https://img.shields.io/badge/version-0.8.4-2563eb?style=for-the-badge&logo=semver)](CHANGELOG.md)
+[![الإصدار](https://img.shields.io/badge/version-0.8.5-2563eb?style=for-the-badge&logo=semver)](CHANGELOG.md)
 [![الرخصة](https://img.shields.io/badge/license-AGPL--3.0-dc2626?style=for-the-badge&logo=gnu)](LICENSE)
 ![Shell](https://img.shields.io/badge/bash-5.2%2B-16a34a?style=for-the-badge&logo=gnubash)
 ![المنصّة](https://img.shields.io/badge/platform-Linux-9333ea?style=for-the-badge&logo=linux)
@@ -138,7 +138,7 @@ sudo mailstead doctor                    # فحص صحي مُجمَّع
 رابط إلى صدفة:
 
 ```bash
-VERSION=0.8.4
+VERSION=0.8.5
 BASE="https://github.com/shadow-x78/mailstead/releases/download/v${VERSION}"
 curl -fsSLO "${BASE}/mailstead-${VERSION}.tar.gz"
 curl -fsSLO "${BASE}/mailstead-${VERSION}.tar.gz.sha256"

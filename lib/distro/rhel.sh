@@ -189,6 +189,7 @@ path() {
         opendkim_conf) printf '/etc/opendkim' ;;
         fail2ban_jail_d) printf '/etc/fail2ban/jail.d' ;;
         unbound_conf_d) printf '/etc/unbound/conf.d' ;;
+        mail_log) printf '%s' '/var/log/maillog' ;;
         nginx_root_group) printf 'nginx' ;;
         *) printf '%s' "$1" ;;
     esac

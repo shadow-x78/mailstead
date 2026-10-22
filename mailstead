@@ -127,10 +127,19 @@ MUTATING_COMMANDS=(install add-domain del-domain add-mailbox del-mailbox passwd
     test-autoconfig mta-sts-enforce sig components wizard backup restore
     upgrade-web uninstall queue)
 
+# Commands that can change the system, with the subcommands that cannot.
+_READONLY_SUBCOMMANDS=(sig:template sig:preview components:list queue:list)
+
 _command_is_mutating() {
     local c
     for c in "${MUTATING_COMMANDS[@]}"; do
-        [[ "$c" == "$1" ]] && return 0
+        [[ "$c" == "$1" ]] || continue
+        local sub="${2:-}"
+        local pair
+        for pair in "${_READONLY_SUBCOMMANDS[@]}"; do
+            [[ "${pair%%:*}" == "$1" && "${pair##*:}" == "$sub" ]] && return 1
+        done
+        return 0
     done
     return 1
 }
@@ -224,7 +233,7 @@ main() {
 
     local _osi=""
     ((FORCE_UNSUPPORTED)) && _osi="--force-unsupported"
-    if _command_is_mutating "$cmd"; then
+    if _command_is_mutating "$cmd" "${rest[0]:-}"; then
         require_root
         acquire_lock
         os_init "$_osi"

@@ -90,11 +90,11 @@ confirm() {
     local reply=""
     if [[ -t 0 ]]; then
         read -r -p "${prompt} [y/N] " reply
-    elif [[ -r /dev/tty ]]; then
-        read -r -p "${prompt} [y/N] " reply </dev/tty
-    else
+    elif ! (: </dev/tty) 2>/dev/null; then
         log_warn "${prompt} (no TTY available; assuming no)"
         return 1
+    else
+        read -r -p "${prompt} [y/N] " reply </dev/tty
     fi
     case "$reply" in
         [yY] | [yY][eE][sS]) return 0 ;;
@@ -387,7 +387,7 @@ download_verified() {
     fi
     if [[ -n "$sha" ]]; then
         local got
-        got="$(sha256sum -- "$dest" | awk '{print $1}')"
+        got="$(sha256sum -- "$dest" | awk '{print $1}' || true)"
         if [[ "$got" != "$sha" ]]; then
             rm -f -- "$dest"
             die "sha256 verification failed for ${dest}: expected ${sha} got ${got}. File removed."

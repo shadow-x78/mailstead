@@ -237,6 +237,7 @@ cmd_del_alias() {
 
 cmd_list() {
     require_config
+    db_require
     local what="${1:-domains}" domain="${2:-}"
     case "$what" in
         domains)

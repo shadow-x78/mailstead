@@ -55,10 +55,10 @@ preflight_dns() {
     local ip4 ptr a
     ip4="$(state_get IP4 2>/dev/null || printf '')"
     if [[ -n "$ip4" ]]; then
-        ptr="$(dig +short -x "$ip4" 2>/dev/null | tr -d '.' | tr '\n' ' ')"
+        ptr="$(dig +short -x "$ip4" 2>/dev/null | tr -d '.' | tr '\n' ' ' || true)"
         [[ "$ptr" == *"$MAIL_HOSTNAME"* ]] || log_warn "PTR(${ip4}) does not match ${MAIL_HOSTNAME} ('${ptr}'). Set it in your provider's panel."
     fi
-    a="$(dig +short "$MAIL_HOSTNAME" A 2>/dev/null | tail -n1)"
+    a="$(dig +short "$MAIL_HOSTNAME" A 2>/dev/null | tail -n1 || true)"
     [[ "$a" == "$ip4" ]] || log_warn "A(${MAIL_HOSTNAME})='${a}' does not match IP=${ip4}."
     return 0
 }
