@@ -23,13 +23,13 @@ fi
 
 # ── color definitions ─────────────────────────────────────────────
 if [ "$MS_COLOR_SUPPORT" -eq 256 ] 2>/dev/null; then
-    MS_COLOR_PRIMARY='\033[38;5;208m'   # orange
-    MS_COLOR_ACCENT='\033[38;5;39m'     # teal
-    MS_COLOR_MUTED='\033[38;5;245m'     # gray
+    MS_COLOR_PRIMARY='\033[38;5;208m' # orange
+    MS_COLOR_ACCENT='\033[38;5;39m'   # teal
+    MS_COLOR_MUTED='\033[38;5;245m'   # gray
 elif [ "$MS_COLOR_SUPPORT" -eq 16 ] 2>/dev/null; then
-    MS_COLOR_PRIMARY='\033[1;33m'       # bold yellow
-    MS_COLOR_ACCENT='\033[1;36m'        # bold cyan
-    MS_COLOR_MUTED='\033[1;37m'         # bold white
+    MS_COLOR_PRIMARY='\033[1;33m' # bold yellow
+    MS_COLOR_ACCENT='\033[1;36m'  # bold cyan
+    MS_COLOR_MUTED='\033[1;37m'   # bold white
 else
     MS_COLOR_PRIMARY=''
     MS_COLOR_ACCENT=''
@@ -41,12 +41,12 @@ MS_NC='\033[0m'
 # ── glyph detection ────────────────────────────────────────────────
 MS_GLYPH_SUPPORT=0
 case "${LANG:-}${LC_ALL:-}${LC_CTYPE:-}" in
-    *UTF-8*|*utf8*) [ -t 1 ] && MS_GLYPH_SUPPORT=1 ;;
+    *UTF-8* | *utf8*) [ -t 1 ] && MS_GLYPH_SUPPORT=1 ;;
 esac
 if [ "$MS_GLYPH_SUPPORT" -eq 0 ] 2>/dev/null && command -v locale >/dev/null 2>&1; then
     _ms_charmap=$(locale charmap 2>/dev/null || true)
     case "$_ms_charmap" in
-        UTF-8*|utf-8*) [ -t 1 ] && MS_GLYPH_SUPPORT=1 ;;
+        UTF-8* | utf-8*) [ -t 1 ] && MS_GLYPH_SUPPORT=1 ;;
     esac
 fi
 
@@ -122,7 +122,7 @@ mailstead_banner() {
     done
 
     # Pad each line
-    local _ms_pad=$(( (_ms_cols - _ms_max) / 2 ))
+    local _ms_pad=$(((_ms_cols - _ms_max) / 2))
     [ "$_ms_pad" -lt 0 ] && _ms_pad=0
 
     for _ms_L in "$_ms_l1" "$_ms_l2" "$_ms_l3" "$_ms_l4" "$_ms_l5" "$_ms_l6" "$_ms_l7" "$_ms_l8" "$_ms_l9" "$_ms_l10" "$_ms_l11" "$_ms_l12" "$_ms_l13" "$_ms_l14" "$_ms_l15" "$_ms_l16" "$_ms_l17" "$_ms_l18"; do
@@ -134,7 +134,7 @@ mailstead_banner() {
     local _ms_tag="Mailstead · v${APP_VERSION:-unknown} · Build and manage a self-hosted mail server."
     local _ms_taglen
     _ms_taglen=$(printf '%s' "$_ms_tag" | wc -m | tr -d ' ')
-    local _ms_tpad=$(( (_ms_cols - _ms_taglen) / 2 ))
+    local _ms_tpad=$(((_ms_cols - _ms_taglen) / 2))
     [ "$_ms_tpad" -lt 0 ] && _ms_tpad=0
     printf "${MS_COLOR_ACCENT}%*s${_ms_tag}${MS_NC}\n" "$_ms_tpad" ''
 
@@ -142,7 +142,7 @@ mailstead_banner() {
     local _ms_auth="By shadow-x78"
     local _ms_authlen
     _ms_authlen=$(printf '%s' "$_ms_auth" | wc -m | tr -d ' ')
-    local _ms_apad=$(( (_ms_cols - _ms_authlen) / 2 ))
+    local _ms_apad=$(((_ms_cols - _ms_authlen) / 2))
     [ "$_ms_apad" -lt 0 ] && _ms_apad=0
     printf "${MS_COLOR_MUTED}%*s${_ms_auth}${MS_NC}\n\n" "$_ms_apad" ''
 }
