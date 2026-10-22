@@ -1,4 +1,3 @@
-# 90-quota.conf.tpl - quota plugin. Managed by Mailstead.
 mail_plugins = $mail_plugins quota
 
 plugin {

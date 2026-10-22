@@ -1,5 +1,4 @@
 <?php
-// Managed by Mailstead - do not edit. Generated from templates/php.
 $config['db_dsnw'] = 'mysql://roundcube:@@DB_RC_PW@@@127.0.0.1/roundcube';
 $config['imap_host'] = 'ssl://@@MAIL_HOSTNAME@@:993';
 $config['smtp_host'] = 'tls://@@MAIL_HOSTNAME@@:587';

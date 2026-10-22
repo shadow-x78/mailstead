@@ -1,20 +1,8 @@
 <?php
-/**
- * mailstead_signature - apply server-rendered signatures in Roundcube.
- * Managed by Mailstead - do not edit.
- *
- * Reads ${APP_LIB}/signatures/rendered/<domain>/<local>.{html,txt} at login and
- * applies it to the standard identity according to the configured policy:
- *   default - set only when the identity signature is empty
- *   enforce - refresh whenever the rendered file is newer than the stored mtime
- *
- * [verify] Verify hook/identity API names against the installed Roundcube version.
- */
 class mailstead_signature extends rcube_plugin
 {
     public $task = '.*';
 
-    /** @var rcmail */
     private $rc;
 
     public function init()

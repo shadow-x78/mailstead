@@ -1,4 +1,3 @@
-# 10-ssl.conf.tpl - TLS. Managed by Mailstead.
 ssl = required
 ssl_cert = <@@TLS_CERT_FILE@@
 ssl_key = <@@TLS_KEY_FILE@@

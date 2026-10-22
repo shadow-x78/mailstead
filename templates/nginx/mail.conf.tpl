@@ -1,4 +1,3 @@
-# mail.conf.tpl - Roundcube (webmail) vhost + hosted signature assets. Managed.
 server {
     listen 80;
     listen [::]:80;
@@ -29,13 +28,11 @@ server {
 
     client_max_body_size 25m;
 
-    # Block access to sensitive Roundcube paths.
     location ~ ^/(config|temp|logs|bin|SQL|vendor|composer\.|README|INSTALL|LICENSE|CHANGELOG|UPGRADING|\.git) {
         return 404;
     }
     location ~ /\.(?!well-known) { return 404; }
 
-    # Hosted signature assets (read-only, immutable filenames).
     location ^~ /sig-assets/ {
         alias @@APP_LIB@@/signatures/assets/;
         autoindex off;
@@ -48,7 +45,6 @@ server {
         location ~ ^/sig-assets/ { return 404; }
     }
 
-    # Signature preview/copy pages.
     location ^~ /sig/ {
         alias @@APP_LIB@@/signatures/rendered/;
         autoindex off;

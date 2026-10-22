@@ -1,5 +1,3 @@
-# acme-http.conf.tpl - HTTP-only bootstrap vhost for ACME (P04), then redirects.
-# Managed by Mailstead.
 server {
     listen 80;
     listen [::]:80;

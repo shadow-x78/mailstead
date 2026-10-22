@@ -1,4 +1,3 @@
-# jail.local.tpl - fail2ban jails for Mailstead services. Managed by Mailstead.
 [DEFAULT]
 backend = auto
 bantime = 1h

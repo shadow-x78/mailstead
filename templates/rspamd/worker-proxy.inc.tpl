@@ -1,4 +1,3 @@
-# worker-proxy.inc - milter/proxy worker. Managed by Mailstead.
 milter = yes;
 timeout = 120s;
 upstream "local" {

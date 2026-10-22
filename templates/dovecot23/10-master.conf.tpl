@@ -1,4 +1,3 @@
-# 10-master.conf.tpl - services. Managed by Mailstead.
 default_process_limit = 200
 default_client_limit = 1000
 

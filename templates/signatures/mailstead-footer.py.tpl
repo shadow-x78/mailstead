@@ -1,19 +1,4 @@
 #!/usr/bin/env python3
-# mailstead-footer.py - Postfix pipe content_filter that appends a per-domain
-# legal footer (disclaimer) to outbound mail, then reinjects the message on
-# 127.0.0.1:10025 so that DKIM signing happens AFTER the footer is added.
-#
-# Invocation (master.cf pipe service):
-#   mailstead-footer.py ${sender} ${recipient}
-#
-# Behaviour:
-#   * skips multipart/signed, multipart/encrypted, application/pkcs7-mime and
-#     messages already carrying the X-Mailstead-Footer header (loop guard);
-#   * appends the footer to every text/plain and text/html part;
-#   * adds X-Mailstead-Footer: 1;
-#   * reinjects via SMTP to 127.0.0.1:10025 with the original envelope;
-#   * on any error exits with EX_TEMPFAIL (75) so Postfix retries; the message
-#     is never silently dropped.
 
 import base64
 import email

@@ -1,4 +1,3 @@
-# opendkim.conf.tpl - OpenDKIM (sign-only). Managed by Mailstead.
 Syslog yes
 SyslogSuccess yes
 LogWhy yes

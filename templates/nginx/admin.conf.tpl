@@ -1,4 +1,3 @@
-# admin.conf.tpl - PostfixAdmin dashboard + Rspamd WebUI proxy (gui mode). Managed.
 server {
     listen 80;
     listen [::]:80;
@@ -31,10 +30,8 @@ server {
 
     client_max_body_size 10m;
 
-    # Never expose the setup script once configured.
     location = /setup.php { return 404; }
 
-    # Rspamd WebUI behind basic auth (proxy to loopback controller).
     location /rspamd/ {
         proxy_pass http://127.0.0.1:11334/;
         proxy_set_header Host $host;

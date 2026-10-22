@@ -1,4 +1,3 @@
-# auth-sql.conf.ext.tpl - SQL passdb/userdb. Managed by Mailstead.
 passdb {
   driver = sql
   args = @@DOVECOT_SQL_CONF@@

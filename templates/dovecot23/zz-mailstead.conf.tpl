@@ -1,4 +1,3 @@
-# zz-mailstead.conf.tpl - global Dovecot overrides. Managed by Mailstead.
 protocols = imap lmtp sieve
 postmaster_address = postmaster@@POSTMASTER_DOMAIN@@
 mail_home = /var/vmail/%d/%n

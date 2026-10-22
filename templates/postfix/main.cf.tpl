@@ -1,5 +1,3 @@
-# main.cf.tpl - Postfix main.cf settings for Mailstead.
-# Applied line-by-line with `postconf -e` (never edit main.cf directly).
 myhostname = @@MAIL_HOSTNAME@@
 mydomain = @@PRIMARY_DOMAIN@@
 myorigin = /etc/mailname
@@ -20,18 +18,14 @@ maximal_queue_lifetime = 3d
 bounce_queue_lifetime = 2d
 compatibility_level = @@POSTFIX_COMPAT_LEVEL@@
 
-# ---- logging (no rsyslog dependency; read by fail2ban and `mailstead logs`) ----
 maillog_file = /var/log/mail.log
 
-# ---- virtual mailbox / alias maps (empty when mailbox=no) ----
 @@POSTFIX_MAPS_BLOCK@@
 
-# ---- milters (Rspamd inbound, OpenDKIM signing) ----
 milter_protocol = 6
 milter_default_action = accept
 @@POSTFIX_MILTERS_BLOCK@@
 
-# ---- inbound TLS ----
 smtpd_tls_cert_file = @@TLS_CERT_FILE@@
 smtpd_tls_key_file = @@TLS_KEY_FILE@@
 smtpd_tls_security_level = may
@@ -45,7 +39,6 @@ smtpd_tls_received_header = yes
 smtpd_tls_loglevel = 1
 smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
 
-# ---- outbound TLS ----
 smtp_tls_security_level = @@SMTP_TLS_LEVEL@@
 smtp_tls_protocols = @@POSTFIX_TLS_PROTOCOLS@@
 smtp_tls_mandatory_protocols = @@POSTFIX_TLS_PROTOCOLS@@
@@ -56,19 +49,16 @@ smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
 smtp_helo_name = $myhostname
 smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt
 
-# ---- restrictions ----
 smtpd_helo_restrictions = permit_mynetworks, reject_invalid_helo_hostname, reject_non_fqdn_helo_hostname
 smtpd_sender_restrictions = permit_mynetworks, permit_sasl_authenticated, reject_non_fqdn_sender, reject_unknown_sender_domain
 smtpd_relay_restrictions = permit_mynetworks, permit_sasl_authenticated, defer_unauth_destination
 smtpd_recipient_restrictions = permit_mynetworks, permit_sasl_authenticated, reject_non_fqdn_recipient, reject_unknown_recipient_domain, reject_unauth_destination
 smtpd_data_restrictions = reject_unauth_pipelining
 
-# ---- generic rate limits ----
 smtpd_client_connection_rate_limit = 30
 smtpd_client_message_rate_limit = 60
 anvil_rate_time_unit = 60s
 
-# ---- outbound transport (throttle sensitive domains) ----
 transport_maps = hash:/etc/postfix/transport
 slow_destination_concurrency_limit = 2
 slow_destination_recipient_limit = 20

@@ -1,4 +1,3 @@
-# dovecot-sql.conf.ext.tpl - SQL auth/db queries. Managed by Mailstead.
 driver = mysql
 connect = host=127.0.0.1 dbname=mailserver user=mailro password=@@DB_MAILRO_PW@@
 default_pass_scheme = BLF-CRYPT

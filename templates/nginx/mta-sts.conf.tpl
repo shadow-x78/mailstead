@@ -1,4 +1,3 @@
-# mta-sts.conf.tpl - MTA-STS policy host for a single domain. Managed.
 server {
     listen 80;
     listen [::]:80;

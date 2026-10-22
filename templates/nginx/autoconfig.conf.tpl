@@ -1,5 +1,3 @@
-# autoconfig.conf.tpl - Thunderbird autoconfig + Outlook Autodiscover (plan-3 E).
-# Managed by Mailstead. One file per domain.
 server {
     listen 80;
     listen [::]:80;

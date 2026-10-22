@@ -1,5 +1,4 @@
 <?php
-// Managed by Mailstead - do not edit.
 $config['password_driver'] = 'sql';
 $config['password_db_dsn'] = 'mysql://mailpw:@@DB_MAILPW_PW@@@127.0.0.1/mailserver';
 $config['password_algorithm'] = 'dovecot';

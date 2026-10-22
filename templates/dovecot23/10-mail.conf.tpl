@@ -1,4 +1,3 @@
-# 10-mail.conf.tpl - mail location and namespaces. Managed by Mailstead.
 mail_location = maildir:~/Maildir
 mail_uid = vmail
 mail_gid = vmail
