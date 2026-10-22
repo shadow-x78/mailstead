@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.5.0] - 2026-10-22
+
+### Added
+
+- docs: open every shipped source file with the standard credit banner: the rule, the purpose line, the repository URL, and a blank line.
+- ci: add `scripts/check-comments.sh` to verify the banner across the tree, and run it on every pull request.
+
 ## [v0.4.0] - 2026-10-22
 
 ### Added
