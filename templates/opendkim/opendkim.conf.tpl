@@ -1,0 +1,21 @@
+# opendkim.conf.tpl - OpenDKIM (sign-only). Managed by Mailstead.
+Syslog yes
+SyslogSuccess yes
+LogWhy yes
+Mode s
+Canonicalization relaxed/relaxed
+SignatureAlgorithm rsa-sha256
+OversignHeaders From
+SubDomains no
+AutoRestart yes
+AutoRestartRate 10/1M
+Background yes
+DNSTimeout 5
+UserID opendkim
+UMask 007
+PidFile /run/opendkim/opendkim.pid
+Socket inet:8891@127.0.0.1
+KeyTable refile:@@OPENDKIM_CONF@@/key.table
+SigningTable refile:@@OPENDKIM_CONF@@/signing.table
+InternalHosts refile:@@OPENDKIM_CONF@@/trusted.hosts
+ExternalIgnoreList refile:@@OPENDKIM_CONF@@/trusted.hosts
