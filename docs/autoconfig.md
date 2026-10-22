@@ -1,4 +1,15 @@
-# Autoconfig and Autodiscover
+<div align="center">
+
+# Autoconfig and Autodiscover - Mailstead
+
+[![Version](https://img.shields.io/badge/version-0.1.0-2563eb?style=flat-square&logo=semver)](../CHANGELOG.md)
+[![License](https://img.shields.io/badge/license-GPL--3.0-dc2626?style=flat-square)](../LICENSE)
+![Shell](https://img.shields.io/badge/bash-5.2%2B-16a34a?style=flat-square&logo=gnubash)
+![Platform](https://img.shields.io/badge/platform-Linux-9333ea?style=flat-square&logo=linux)
+
+</div>
+
+---
 
 Mailstead generates client auto-configuration for a domain so users only type their
 address and password.

@@ -59,12 +59,41 @@ APP_ROOT="/opt/mailstead"
 local cmd dest content
 ```
 
+## File Header Convention (Credit Banner)
+
+Every shipped source file opens with the standard credit banner, followed by one
+blank line. The purpose line names what the file is; it is the only place a
+per-file title is written.
+
+```
+# ─────────────────────────────────────────────
+# Mailstead - <Purpose>
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+```
+
+The banner sits directly after the shebang. XML and HTML documents keep their
+declaration first and use the single-line form instead:
+
+```
+<!-- Mailstead - <Purpose> https://github.com/shadow-x78/mailstead -->
+```
+
+The comment prefix follows the file format: `#` for shell, YAML, env and Python,
+`;` for PHP-FPM, `--` for SQL, `//` for PHP, `<!-- -->` for XML and HTML.
+
+Run `bash scripts/check-comments.sh` to verify the tree; CI runs it on every
+pull request.
+
 ## Check Commands
 
 ```bash
 # Verify all shell files pass style checks
 shellcheck -x mailstead install.sh lib/*.sh lib/distro/*.sh phases/*.sh
 shfmt -d -i 4 -ci mailstead install.sh lib/*.sh lib/distro/*.sh phases/*.sh
+
+# Verify every source file carries the credit banner
+bash scripts/check-comments.sh
 
 # Verify tests pass
 bats tests/*.bats

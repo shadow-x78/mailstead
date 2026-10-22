@@ -1,4 +1,15 @@
+<div align="center">
+
 # Contributing to Mailstead
+
+[![Version](https://img.shields.io/badge/version-0.1.0-2563eb?style=flat-square&logo=semver)](CHANGELOG.md)
+[![License](https://img.shields.io/badge/license-GPL--3.0-dc2626?style=flat-square)](LICENSE)
+![Shell](https://img.shields.io/badge/bash-5.2%2B-16a34a?style=flat-square&logo=gnubash)
+![Platform](https://img.shields.io/badge/platform-Linux-9333ea?style=flat-square&logo=linux)
+
+</div>
+
+---
 
 Thanks for your interest. Mailstead is a Bash tool; contributions should keep it
 portable, idempotent and shellcheck/shfmt clean.
@@ -11,11 +22,14 @@ Required tools: `bash` >= 5, `shellcheck`, `shfmt`, `bats` (bats-core) and
 ```bash
 shellcheck -x mailstead install.sh lib/*.sh lib/distro/*.sh phases/*.sh
 shfmt -d -i 4 -ci mailstead install.sh lib/*.sh lib/distro/*.sh phases/*.sh
+bash scripts/check-comments.sh
 bats tests/*.bats
 ```
 
 ## Coding rules
 
+- Every file starts with the standard credit banner, then one blank line. The
+  banner names the file's purpose; do not repeat the title in a second comment.
 - Every script starts with `set -Eeuo pipefail`, `IFS=$'\n\t'`, `umask 027`.
 - Every function is idempotent and honours `--dry-run`.
 - **Never** rewrite `/etc/postfix/main.cf` or `master.cf` wholesale — use
