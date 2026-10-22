@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+# ─────────────────────────────────────────────
+# Mailstead - Signature HTML Sanitizer and Renderer
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 """mailstead-sig.py - signature HTML sanitizer / renderer / text converter.
 
 Python 3 standard library only. Used by Mailstead's signature subsystem:

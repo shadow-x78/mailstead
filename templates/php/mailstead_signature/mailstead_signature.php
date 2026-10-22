@@ -1,4 +1,9 @@
 <?php
+// ─────────────────────────────────────────────
+// Mailstead - Roundcube Signature Plugin
+// https://github.com/shadow-x78/mailstead
+// ─────────────────────────────────────────────
+
 class mailstead_signature extends rcube_plugin
 {
     public $task = '.*';

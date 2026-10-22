@@ -1,4 +1,9 @@
 <?php
+// ─────────────────────────────────────────────
+// Mailstead - PostfixAdmin Configuration
+// https://github.com/shadow-x78/mailstead
+// ─────────────────────────────────────────────
+
 $CONF['configured'] = true;
 $CONF['database_type'] = 'mysqli';
 $CONF['database_host'] = '127.0.0.1';

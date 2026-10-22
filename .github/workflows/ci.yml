@@ -1,3 +1,8 @@
+# ─────────────────────────────────────────────
+# Mailstead - CI Workflow
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 name: CI
 
 on:

@@ -1,3 +1,8 @@
+# ─────────────────────────────────────────────
+# Mailstead - Fail2ban Jail Filter
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 [DEFAULT]
 backend = auto
 bantime = 1h

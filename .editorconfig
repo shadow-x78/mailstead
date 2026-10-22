@@ -1,9 +1,11 @@
-# Mailstead - Editor configuration
+# ─────────────────────────────────────────────
+# Mailstead - Editor Configuration
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 # Matches the project style: 4-space indentation, Unix line endings.
 #
 # This file is optional. shfmt is the source of formatting truth for bash code.
-#
-# ─────────────────────────────────────────────
 
 root = true
 

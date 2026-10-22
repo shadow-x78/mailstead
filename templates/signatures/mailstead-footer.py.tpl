@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# ─────────────────────────────────────────────
+# Mailstead - Signature Footer Script
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
 
 import base64
 import email

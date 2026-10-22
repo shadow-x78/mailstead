@@ -1,3 +1,5 @@
+<!-- Mailstead - Classic HTML Signature https://github.com/shadow-x78/mailstead -->
+
 <table cellpadding="0" cellspacing="0" border="0" dir="{{DIR}}" style="font-family:{{FONT_STACK}};font-size:13px;line-height:1.4;color:#333333;{{DIR_CSS}}">
   <tr>
     {{#LOGO_URL}}<td valign="top" style="padding-right:14px;"><img src="{{LOGO_URL}}" width="{{LOGO_W}}" height="{{LOGO_H}}" alt="{{ORG}}" style="display:block;border:0;"></td>{{/LOGO_URL}}

@@ -1,4 +1,9 @@
 <?php
+// ─────────────────────────────────────────────
+// Mailstead - Autodiscover Endpoint
+// https://github.com/shadow-x78/mailstead
+// ─────────────────────────────────────────────
+
 header('Content-Type: text/xml; charset=utf-8');
 $cfg = @parse_ini_file('@@APP_ETC@@/autodiscover.ini');
 $domains = @file('@@APP_LIB@@/domains.list', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);

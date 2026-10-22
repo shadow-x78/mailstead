@@ -1,4 +1,9 @@
 <?php
+// ─────────────────────────────────────────────
+// Mailstead - Roundcube Password Policy
+// https://github.com/shadow-x78/mailstead
+// ─────────────────────────────────────────────
+
 $config['password_driver'] = 'sql';
 $config['password_db_dsn'] = 'mysql://mailpw:@@DB_MAILPW_PW@@@127.0.0.1/mailserver';
 $config['password_algorithm'] = 'dovecot';

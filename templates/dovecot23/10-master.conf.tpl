@@ -1,3 +1,8 @@
+# ─────────────────────────────────────────────
+# Mailstead - Dovecot Master Configuration
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 default_process_limit = 200
 default_client_limit = 1000
 

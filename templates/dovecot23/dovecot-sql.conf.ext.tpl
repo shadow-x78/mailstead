@@ -1,3 +1,8 @@
+# ─────────────────────────────────────────────
+# Mailstead - Dovecot SQL Map Query
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 driver = mysql
 connect = host=127.0.0.1 dbname=mailserver user=mailro password=@@DB_MAILRO_PW@@
 default_pass_scheme = BLF-CRYPT

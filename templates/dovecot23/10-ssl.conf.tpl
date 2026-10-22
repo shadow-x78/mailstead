@@ -1,3 +1,8 @@
+# ─────────────────────────────────────────────
+# Mailstead - Dovecot TLS Settings
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 ssl = required
 ssl_cert = <@@TLS_CERT_FILE@@
 ssl_key = <@@TLS_KEY_FILE@@

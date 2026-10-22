@@ -1,3 +1,8 @@
+# ─────────────────────────────────────────────
+# Mailstead - Nginx Mail Proxy Vhost
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 server {
     listen 80;
     listen [::]:80;

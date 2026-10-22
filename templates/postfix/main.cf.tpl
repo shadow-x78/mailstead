@@ -1,3 +1,8 @@
+# ─────────────────────────────────────────────
+# Mailstead - Postfix Main Configuration
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 myhostname = @@MAIL_HOSTNAME@@
 mydomain = @@PRIMARY_DOMAIN@@
 myorigin = /etc/mailname

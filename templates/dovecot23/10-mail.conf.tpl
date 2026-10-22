@@ -1,3 +1,8 @@
+# ─────────────────────────────────────────────
+# Mailstead - Dovecot Mailbox Locations
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 mail_location = maildir:~/Maildir
 mail_uid = vmail
 mail_gid = vmail

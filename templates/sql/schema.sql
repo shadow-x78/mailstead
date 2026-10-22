@@ -1,4 +1,8 @@
--- schema.sql - Mailstead cli-mode schema (PostfixAdmin-compatible column names).
+-- ─────────────────────────────────────────────
+-- Mailstead - Database Schema
+-- https://github.com/shadow-x78/mailstead
+-- ─────────────────────────────────────────────
+
 -- Applied with: mysql mailserver < this file. All statements are idempotent.
 
 CREATE TABLE IF NOT EXISTS domain (

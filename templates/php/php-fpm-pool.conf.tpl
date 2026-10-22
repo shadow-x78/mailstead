@@ -1,5 +1,10 @@
-; php-fpm-pool.conf.tpl - dedicated Mailstead PHP-FPM pool.
+; ─────────────────────────────────────────────
+; Mailstead - PHP-FPM Pool Configuration
+; https://github.com/shadow-x78/mailstead
+; ─────────────────────────────────────────────
+
 ; Managed by Mailstead. Do not edit the vendor default pool.
+
 [@@APP_SLUG@@]
 user = @@WEB_USER@@
 group = @@WEB_USER@@

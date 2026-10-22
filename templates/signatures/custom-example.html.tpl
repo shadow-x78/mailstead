@@ -1,3 +1,5 @@
+<!-- Mailstead - Custom HTML Signature Example https://github.com/shadow-x78/mailstead -->
+
 <table cellpadding="0" cellspacing="0" border="0" dir="{{DIR}}" style="font-family:{{#RTL}}Tahoma, Arial, sans-serif{{/RTL}}{{#LTR}}Arial, Helvetica, sans-serif{{/LTR}};font-size:13px;line-height:1.5;color:#222222;">
   <tr>
     <td style="padding-bottom:4px;font-size:15px;font-weight:bold;color:#111111;">{{NAME}}</td>

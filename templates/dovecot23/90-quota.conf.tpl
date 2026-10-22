@@ -1,3 +1,8 @@
+# ─────────────────────────────────────────────
+# Mailstead - Dovecot Quota Limits
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 mail_plugins = $mail_plugins quota
 
 plugin {

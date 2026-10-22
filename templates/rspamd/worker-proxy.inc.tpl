@@ -1,3 +1,8 @@
+# ─────────────────────────────────────────────
+# Mailstead - Rspamd Worker Proxy Include
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 milter = yes;
 timeout = 120s;
 upstream "local" {

@@ -1,3 +1,8 @@
+# ─────────────────────────────────────────────
+# Mailstead - OpenDKIM Configuration
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 Syslog yes
 SyslogSuccess yes
 LogWhy yes

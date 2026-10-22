@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Mailstead - Thunderbird Autoconfiguration Profile https://github.com/shadow-x78/mailstead -->
+
 <clientConfig version="1.1">
   <emailProvider id="@@DOMAIN@@">
     <domain>@@DOMAIN@@</domain>

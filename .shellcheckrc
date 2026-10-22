@@ -1,9 +1,13 @@
-# ShellCheck configuration for Mailstead.
-#
+# ─────────────────────────────────────────────
+# Mailstead - ShellCheck Configuration
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 # SC2034: many variables are assigned purely so `render_template` can consume
 #         them indirectly through the TPL_VARS list; shellcheck cannot see that
 #         use, so the "appears unused" warning is a false positive here.
 # SC2016: single-quoted strings legitimately contain a literal `$` (bcrypt
 #         hashes, SQL/Postfix/Dovecot literals, awk bodies) that must NOT expand.
+
 disable=SC2034
 disable=SC2016

@@ -1,3 +1,8 @@
+# ─────────────────────────────────────────────
+# Mailstead - Dovecot Mailstead Overrides
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 protocols = imap lmtp sieve
 postmaster_address = postmaster@@POSTMASTER_DOMAIN@@
 mail_home = /var/vmail/%d/%n
