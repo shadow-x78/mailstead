@@ -1,0 +1,264 @@
+#!/usr/bin/env bash
+# mailstead - main dispatcher for the Mailstead mail-server builder.
+#
+# Usage: mailstead <command> [options]
+set -Eeuo pipefail
+IFS=$'\n\t'
+umask 027
+export LC_ALL=C
+export DEBIAN_FRONTEND=noninteractive
+
+DRY_RUN=0
+ASSUME_YES=0
+VERBOSE=0
+FORCE_UNSUPPORTED=0
+: "${OFFLINE:=0}"
+
+# ---- resolve project root through any symlinks ----
+_resolve_root() {
+    local self="${BASH_SOURCE[0]}" dir
+    while [[ -L "$self" ]]; do
+        dir="$(cd -P "$(dirname -- "$self")" && pwd)"
+        self="$(readlink -- "$self")"
+        [[ "$self" == /* ]] || self="${dir}/${self}"
+    done
+    cd -P "$(dirname -- "$self")" && pwd
+}
+APP_ROOT="$(_resolve_root)"
+export APP_ROOT
+
+# shellcheck source=lib/brand.sh
+. "${APP_ROOT}/lib/brand.sh"
+# shellcheck source=lib/common.sh
+. "${APP_ROOT}/lib/common.sh"
+# shellcheck source=lib/os.sh
+. "${APP_ROOT}/lib/os.sh"
+
+LOG_FILE="${APP_LOG}/${APP_SLUG}.log"
+export LOG_FILE
+
+trap 'on_error $? $LINENO "$BASH_COMMAND"' ERR
+
+# ---- command modules (sourced lazily by command group) ----
+_load_modules() {
+    local m
+    for m in config components db tls nginx postfix dovecot dkim rspamd postfixadmin \
+        roundcube dnsrecords security backup report autoconfig signatures preflight cli install; do
+        # A module joins the tree with the release that introduces it.
+        [ -r "${APP_ROOT}/lib/${m}.sh" ] || continue
+        # shellcheck source=/dev/null
+        . "${APP_ROOT}/lib/${m}.sh"
+    done
+}
+
+usage() {
+    cat <<EOF
+${APP_NAME} ${APP_VERSION} - Build and manage a self-hosted mail server.
+
+Usage:
+  ${APP_CMD} install --hostname mail.example.com --domain example.com --admin-email admin@example.com
+                    [--preset standard|minimal|full|send-only|custom] [--mode cli|gui]
+                    [--webmail roundcube|none] [--dashboard postfixadmin|none]
+                    [--webserver nginx|existing|none] [--db mariadb|none]
+                    [--spam rspamd|none] [--dkim opendkim|none] [--sieve yes|no]
+                    [--mta-sts yes|no] [--autoconfig none|thunderbird|outlook|all]
+                    [--signatures none|client|server] [--sig-policy default|enforce]
+                    [--sig-images hosted|cid] [--resolver unbound|system]
+                    [--firewall auto|ufw|firewalld|nftables|none] [--fail2ban yes|no]
+                    [--tls letsencrypt|selfsigned|existing] [--acme-client certbot|acme.sh]
+                    [--acme-challenge http|standalone|dns-cloudflare] [--admin-allow-ip IP[,IP]]
+                    [--ip4 auto|A.B.C.D] [--ip6 none|auto|ADDR] [--ssh-port 22]
+                    [--staging] [--postscreen yes|no] [--dane yes|no]
+                    [--config FILE] [--skip COMP[,COMP]] [--dry-run] [--offline] [--yes]
+
+  ${APP_CMD} add-domain DOMAIN [--no-web] [--display-name NAME]
+  ${APP_CMD} del-domain DOMAIN [--purge-mail] --yes
+  ${APP_CMD} add-mailbox user@domain [--password P|auto] [--quota MB] [--name "Full Name"]
+                                     [--title T] [--phone P]
+  ${APP_CMD} del-mailbox user@domain [--purge-mail] --yes
+  ${APP_CMD} passwd user@domain [--password P|auto]
+  ${APP_CMD} add-alias alias@domain target1,target2
+  ${APP_CMD} del-alias alias@domain
+  ${APP_CMD} list domains|mailboxes|aliases [DOMAIN]
+  ${APP_CMD} dkim-show DOMAIN
+  ${APP_CMD} dkim-rotate DOMAIN
+  ${APP_CMD} dns-print DOMAIN
+  ${APP_CMD} dns-check DOMAIN
+  ${APP_CMD} cert-issue | cert-renew | cert-status
+  ${APP_CMD} autoconfig regenerate [DOMAIN|--all]
+  ${APP_CMD} test-autoconfig user@example.com
+  ${APP_CMD} mta-sts-enforce DOMAIN
+  ${APP_CMD} apple-profile user@domain
+  ${APP_CMD} sig template list|show NAME
+  ${APP_CMD} sig set DOMAIN|user@d [options]
+  ${APP_CMD} sig set-html DOMAIN|user@d FILE.html
+  ${APP_CMD} sig set-text DOMAIN|user@d FILE.txt
+  ${APP_CMD} sig image add DOMAIN FILE [--kind logo|banner]
+  ${APP_CMD} sig preview user@d
+  ${APP_CMD} sig apply user@d|DOMAIN|--all
+  ${APP_CMD} sig export user@d --format thunderbird|outlook|apple|html|txt --out DIR
+  ${APP_CMD} sig remove user@d|DOMAIN
+  ${APP_CMD} sig server enable|disable|status
+  ${APP_CMD} components list
+  ${APP_CMD} components add COMPONENT
+  ${APP_CMD} components remove COMPONENT --yes
+  ${APP_CMD} wizard
+  ${APP_CMD} test-send --from a@d --to x@gmail.com [--via submission|local] [--password P]
+  ${APP_CMD} test-tls [HOST]
+  ${APP_CMD} status
+  ${APP_CMD} queue list|flush|delete-all --yes
+  ${APP_CMD} logs [postfix|dovecot|rspamd|nginx] [-n N] [-f]
+  ${APP_CMD} backup [--dest DIR]
+  ${APP_CMD} restore FILE --yes
+  ${APP_CMD} upgrade-web
+  ${APP_CMD} doctor
+  ${APP_CMD} uninstall [--purge] [--purge-mail] --yes
+                    # --purge: remove the packages, config and the application
+                    # --purge-mail: permanently delete /var/vmail (user data)
+
+Note: Arch Linux and openSUSE are not supported in v1. The tool is open source and non-commercial.
+To remove everything: ${APP_CMD} uninstall --purge --purge-mail --yes
+EOF
+}
+
+MUTATING_COMMANDS=(install add-domain del-domain add-mailbox del-mailbox passwd
+    add-alias del-alias dkim-rotate cert-issue cert-renew autoconfig
+    test-autoconfig mta-sts-enforce sig components wizard backup restore
+    upgrade-web uninstall queue)
+
+_command_is_mutating() {
+    local c
+    for c in "${MUTATING_COMMANDS[@]}"; do
+        [[ "$c" == "$1" ]] && return 0
+    done
+    return 1
+}
+
+acquire_lock() {
+    local lock="/var/lock/${APP_SLUG}.lock"
+    if [[ ! -w "$(dirname -- "$lock")" ]]; then
+        return 0
+    fi
+    exec 9>"$lock" 2>/dev/null || return 0
+    flock -n 9 || die "another ${APP_NAME} instance is already running." "$EX_ERR"
+}
+
+_dispatch() {
+    local handler="$1"
+    shift
+    if ! declare -F "$handler" >/dev/null 2>&1; then
+        die "unknown command: ${cmd}. Run '${APP_CMD} --help'." "$EX_USAGE"
+    fi
+    "$handler" "$@"
+}
+
+main() {
+    local cmd="" arg
+    local -a rest=()
+    while [[ $# -gt 0 ]]; do
+        arg="$1"
+        case "$arg" in
+            --dry-run)
+                DRY_RUN=1
+                shift
+                ;;
+            --yes | -y)
+                ASSUME_YES=1
+                shift
+                ;;
+            --verbose)
+                VERBOSE=1
+                shift
+                ;;
+            --force-unsupported)
+                FORCE_UNSUPPORTED=1
+                shift
+                ;;
+            --offline)
+                OFFLINE=1
+                export OFFLINE
+                shift
+                ;;
+            --version | -V)
+                printf '%s %s\n' "$APP_NAME" "$APP_VERSION"
+                return 0
+                ;;
+            --help | -h)
+                usage
+                return 0
+                ;;
+            --)
+                shift
+                rest+=("$@")
+                break
+                ;;
+            -*)
+                if [[ -z "$cmd" ]]; then rest+=("$arg"); else rest+=("$arg"); fi
+                shift
+                ;;
+            *)
+                if [[ -z "$cmd" ]]; then cmd="$arg"; else rest+=("$arg"); fi
+                shift
+                ;;
+        esac
+    done
+
+    case "$cmd" in
+        "" | help)
+            usage
+            return 0
+            ;;
+    esac
+
+    _load_modules
+
+    local _osi=""
+    ((FORCE_UNSUPPORTED)) && _osi="--force-unsupported"
+    if _command_is_mutating "$cmd"; then
+        require_root
+        acquire_lock
+        os_init "$_osi"
+    else
+        # read-only commands still need distro context (paths/services).
+        os_init "$_osi"
+    fi
+
+    case "$cmd" in
+        install) _dispatch cmd_install "${rest[@]+"${rest[@]}"}" ;;
+        add-domain) _dispatch cmd_add_domain "${rest[@]+"${rest[@]}"}" ;;
+        del-domain) _dispatch cmd_del_domain "${rest[@]+"${rest[@]}"}" ;;
+        add-mailbox) _dispatch cmd_add_mailbox "${rest[@]+"${rest[@]}"}" ;;
+        del-mailbox) _dispatch cmd_del_mailbox "${rest[@]+"${rest[@]}"}" ;;
+        passwd) _dispatch cmd_passwd "${rest[@]+"${rest[@]}"}" ;;
+        add-alias) _dispatch cmd_add_alias "${rest[@]+"${rest[@]}"}" ;;
+        del-alias) _dispatch cmd_del_alias "${rest[@]+"${rest[@]}"}" ;;
+        list) _dispatch cmd_list "${rest[@]+"${rest[@]}"}" ;;
+        dkim-show) _dispatch cmd_dkim_show "${rest[@]+"${rest[@]}"}" ;;
+        dkim-rotate) _dispatch cmd_dkim_rotate "${rest[@]+"${rest[@]}"}" ;;
+        dns-print) _dispatch cmd_dns_print "${rest[@]+"${rest[@]}"}" ;;
+        dns-check) _dispatch cmd_dns_check "${rest[@]+"${rest[@]}"}" ;;
+        cert-issue) _dispatch cmd_cert_issue "${rest[@]+"${rest[@]}"}" ;;
+        cert-renew) _dispatch cmd_cert_renew "${rest[@]+"${rest[@]}"}" ;;
+        cert-status) _dispatch cmd_cert_status "${rest[@]+"${rest[@]}"}" ;;
+        autoconfig) _dispatch cmd_autoconfig "${rest[@]+"${rest[@]}"}" ;;
+        test-autoconfig) _dispatch cmd_test_autoconfig "${rest[@]+"${rest[@]}"}" ;;
+        mta-sts-enforce) _dispatch cmd_mta_sts_enforce "${rest[@]+"${rest[@]}"}" ;;
+        apple-profile) _dispatch cmd_apple_profile "${rest[@]+"${rest[@]}"}" ;;
+        sig) _dispatch cmd_sig "${rest[@]+"${rest[@]}"}" ;;
+        components) _dispatch cmd_components "${rest[@]+"${rest[@]}"}" ;;
+        wizard) _dispatch cmd_wizard "${rest[@]+"${rest[@]}"}" ;;
+        test-send) _dispatch cmd_test_send "${rest[@]+"${rest[@]}"}" ;;
+        test-tls) _dispatch cmd_test_tls "${rest[@]+"${rest[@]}"}" ;;
+        status) _dispatch cmd_status "${rest[@]+"${rest[@]}"}" ;;
+        queue) _dispatch cmd_queue "${rest[@]+"${rest[@]}"}" ;;
+        logs) _dispatch cmd_logs "${rest[@]+"${rest[@]}"}" ;;
+        backup) _dispatch cmd_backup "${rest[@]+"${rest[@]}"}" ;;
+        restore) _dispatch cmd_restore "${rest[@]+"${rest[@]}"}" ;;
+        upgrade-web) _dispatch cmd_upgrade_web "${rest[@]+"${rest[@]}"}" ;;
+        doctor) _dispatch cmd_doctor "${rest[@]+"${rest[@]}"}" ;;
+        uninstall) _dispatch cmd_uninstall "${rest[@]+"${rest[@]}"}" ;;
+        *) die "unknown command: ${cmd}. Run '${APP_CMD} --help'." "$EX_USAGE" ;;
+    esac
+}
+
+main "$@"
