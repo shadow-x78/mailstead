@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.7.0] - 2026-10-22
+
+### Changed
+
+- docs: point the release download URLs at the GitHub Releases pages instead of a placeholder host.
+- docs: add the credit banner to the issue templates and replace the placeholder `OWNER/REPO` contact links with the real repository URLs.
+- chore: extend the ignore rules with the editor and merge leftovers.
+
 ## [v0.6.0] - 2026-10-22
 
 ### Changed
