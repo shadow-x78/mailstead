@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# ─────────────────────────────────────────────
+# Mailstead - Operating System Detection
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
 
 os_init() {
     local force="${1:-}"

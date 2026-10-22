@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# ─────────────────────────────────────────────
+# Mailstead - Package Installation Phase
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 PHASE_REQUIRES=""
 
 _p01_logicals() {

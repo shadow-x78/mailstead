@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# ─────────────────────────────────────────────
+# Mailstead - Command Dispatch and Subcommands
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 # shellcheck shell=bash
 
 STANDARD_ALIASES=(postmaster abuse hostmaster dmarc tls-reports)

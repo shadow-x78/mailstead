@@ -1,5 +1,8 @@
 #!/usr/bin/env bats
-# tests/packages.bats - install-time package tracking for safe uninstall.
+# ─────────────────────────────────────────────
+# Mailstead - Package Backend Tests
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
 
 setup() {
     ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"

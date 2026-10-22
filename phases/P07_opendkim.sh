@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# ─────────────────────────────────────────────
+# Mailstead - OpenDKIM Setup Phase
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 PHASE_REQUIRES="dkim"
 
 phase_P07() {

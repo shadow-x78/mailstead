@@ -1,6 +1,9 @@
 #!/usr/bin/env bats
-# tests/install.bats - end-to-end dry-run of the installer pipeline.
-#
+# ─────────────────────────────────────────────
+# Mailstead - End-to-End Installer Tests
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 # Runs the real cmd_install (parsing -> resolve -> config -> P00..P16) with
 # DRY_RUN=1 against a scratch filesystem so it must complete without needing
 # root, systemd, or a real install. This is the "does the whole flow work"

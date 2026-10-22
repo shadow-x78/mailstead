@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# ─────────────────────────────────────────────
+# Mailstead - Nginx Web and Mail Proxy
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 # shellcheck shell=bash
 
 nginx_conf_dir() { path nginx_conf_d; }

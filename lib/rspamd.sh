@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# ─────────────────────────────────────────────
+# Mailstead - Rspamd Spam Filter
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 # shellcheck shell=bash
 
 rspamd_local_d() { path rspamd_local_d; }

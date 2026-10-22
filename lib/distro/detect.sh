@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# ─────────────────────────────────────────────
+# Mailstead - Distribution Detection
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
 
 distro_detect() {
     local force="${1:-}" id="" id_like="" version="" pr_name=""

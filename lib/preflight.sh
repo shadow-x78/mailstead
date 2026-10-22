@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# ─────────────────────────────────────────────
+# Mailstead - Preflight Checks
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 # shellcheck shell=bash
 
 preflight_hostname() {

@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# ─────────────────────────────────────────────
+# Mailstead - Brand Identity and Paths
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
 
 APP_NAME="Mailstead"
 APP_SLUG="mailstead"

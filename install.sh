@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
-# install.sh - install the Mailstead tool itself into ${APP_OPT} and link it.
+# ─────────────────────────────────────────────
+# Mailstead - Local Installation Script
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 # This does NOT configure the mail server; run `mailstead install` afterwards.
+
 set -Eeuo pipefail
 IFS=$'\n\t'
 umask 027

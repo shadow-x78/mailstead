@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# ─────────────────────────────────────────────
+# Mailstead - Email Signature Engine
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 # shellcheck shell=bash
 
 sig_root() { printf '%s/signatures' "$APP_LIB"; }

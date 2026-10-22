@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# ─────────────────────────────────────────────
+# Mailstead - RHEL, Fedora, and SUSE Package Backend
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
 
 pkg_refresh() {
     if ((DRY_RUN)); then

@@ -1,5 +1,8 @@
 #!/usr/bin/env bats
-# tests/distro.bats - distribution detection and supported-family mapping.
+# ─────────────────────────────────────────────
+# Mailstead - Distribution Detection Tests
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
 
 setup() {
     ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"

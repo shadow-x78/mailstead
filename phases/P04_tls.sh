@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# ─────────────────────────────────────────────
+# Mailstead - TLS Setup Phase
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 PHASE_REQUIRES=""
 
 phase_P04() {

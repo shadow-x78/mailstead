@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# ─────────────────────────────────────────────
+# Mailstead - Command Line Interface
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 set -Eeuo pipefail
 IFS=$'\n\t'
 umask 027

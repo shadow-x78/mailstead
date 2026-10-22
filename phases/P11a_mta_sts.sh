@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# ─────────────────────────────────────────────
+# Mailstead - MTA-STS Setup Phase
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 PHASE_REQUIRES="mta-sts"
 
 phase_P11a() {

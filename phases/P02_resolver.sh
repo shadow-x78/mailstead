@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# ─────────────────────────────────────────────
+# Mailstead - Component Resolution Phase
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 PHASE_REQUIRES=""
 
 phase_P02() {

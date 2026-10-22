@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# ─────────────────────────────────────────────
+# Mailstead - Autoconfiguration and MTA-STS Endpoints
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 # shellcheck shell=bash
 
 domains_list_file() { printf '%s/domains.list' "$APP_LIB"; }

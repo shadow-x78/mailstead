@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# ─────────────────────────────────────────────
+# Mailstead - Package Name Mapping
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
 
 pkgmap_get() {
     local logical fam="${DISTRO_FAMILY:-debian}" out="" name

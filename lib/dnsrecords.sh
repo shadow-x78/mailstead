@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# ─────────────────────────────────────────────
+# Mailstead - DNS Record Builder and Verifier
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 # shellcheck shell=bash
 
 DNS_PUBLIC_RESOLVERS=(1.1.1.1 8.8.8.8)

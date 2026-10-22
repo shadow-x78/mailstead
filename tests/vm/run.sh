@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
-# tests/vm/run.sh - integration checklist for a throwaway Tier-1 VM.
-#
+# ─────────────────────────────────────────────
+# Mailstead - Virtual Machine Test Harness
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 # Run INSIDE a fresh Debian/Ubuntu or Fedora/RHEL-family VM as root:
 #   VM_CONFIRM=yes ./tests/vm/run.sh
 #
 # It is destructive (installs/configures a mail server and, at the end, uninstalls)
 # and requires network and a real domain or a placeholder like test.local.
 # Do not run it on a machine you care about.
+
 set -Eeuo pipefail
 IFS=$'\n\t'
 

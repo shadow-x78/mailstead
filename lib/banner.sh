@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
-# lib/banner.sh — Mailstead banner (ASCII art + ANSI colors).
-#
+# ─────────────────────────────────────────────
+# Mailstead - Terminal Banner
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 # Design: Envelope with V-shaped flap and MAIL text.
 # Uses ONLY ▀█ block chars — renders identically in all terminals.
 

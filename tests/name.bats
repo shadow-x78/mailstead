@@ -1,5 +1,9 @@
 #!/usr/bin/env bats
-# tests/name.bats - the shipped source must not use any rejected project name.
+# ─────────────────────────────────────────────
+# Mailstead - Project Name Guard Tests
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 # Plan-3 section B/H6. The plan markdown files themselves are the spec and are
 # excluded, as are the tests that mention the rejected names on purpose.
 

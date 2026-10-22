@@ -1,5 +1,8 @@
 #!/usr/bin/env bats
-# tests/signatures.bats - tests for scripts/mailstead-sig.py.
+# ─────────────────────────────────────────────
+# Mailstead - Signature Engine Tests
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
 
 setup() {
     ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"

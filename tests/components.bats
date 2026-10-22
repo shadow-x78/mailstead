@@ -1,5 +1,8 @@
 #!/usr/bin/env bats
-# tests/components.bats - preset and dependency resolution.
+# ─────────────────────────────────────────────
+# Mailstead - Component Selection Tests
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
 
 setup() {
     ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"

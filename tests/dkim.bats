@@ -1,5 +1,8 @@
 #!/usr/bin/env bats
-# tests/dkim.bats - OpenDKIM record parsing and table domain matching.
+# ─────────────────────────────────────────────
+# Mailstead - DKIM Parsing Tests
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
 
 setup() {
     ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"

@@ -1,5 +1,8 @@
 #!/usr/bin/env bats
-# tests/common.bats - unit tests for lib/common.sh helpers.
+# ─────────────────────────────────────────────
+# Mailstead - Tests for lib/common.sh Helpers
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
 
 setup() {
     ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"

@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
-# lib/components.sh - component selection: presets, flags, dependency resolver.
-#
+# ─────────────────────────────────────────────
+# Mailstead - Component Selection and Dependency Resolver
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 # Components are stored in COMP_<NAME> shell variables and persisted to
 # ${APP_ETC}/components.env. Flags override presets; the config file overrides
 # flags (handled by the dispatcher's apply order).

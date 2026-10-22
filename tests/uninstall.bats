@@ -1,5 +1,8 @@
 #!/usr/bin/env bats
-# tests/uninstall.bats - proves the "remove everything" uninstall flow.
+# ─────────────────────────────────────────────
+# Mailstead - Uninstall and Purge Tests
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
 
 setup() {
     ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"

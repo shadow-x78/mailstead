@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# ─────────────────────────────────────────────
+# Mailstead - Shared Helpers
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
 
 # shellcheck shell=bash
 

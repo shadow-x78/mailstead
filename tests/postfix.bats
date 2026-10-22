@@ -1,5 +1,8 @@
 #!/usr/bin/env bats
-# tests/postfix.bats - Postfix version-conditional compatibility variables.
+# ─────────────────────────────────────────────
+# Mailstead - Postfix Configuration Tests
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
 
 setup() {
     ROOT="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"
