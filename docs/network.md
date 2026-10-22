@@ -1,0 +1,26 @@
+# Network connections
+
+Mailstead contains **no telemetry**. This page lists every outbound connection the
+tool itself can make, what it is for, and how to disable it.
+
+| Destination | Purpose | When | Disable |
+|---|---|---|---|
+| `https://api.ipify.org` | Detect the server’s public IPv4 for DNS/SPF records | `install`, unless `--ip4` is given | `--offline` (falls back to `ip route get 1.1.1.1`) |
+| `github.com` (release URLs in `config/versions.env`) | Download the pinned Roundcube / PostfixAdmin tarballs (verified with SHA-256) | `install`, `upgrade-web`, when the file is not already cached | `--offline` plus a pre-placed file in `/var/lib/mailstead/cache/` |
+| Let’s Encrypt ACME (`acme-v02.api.letsencrypt.org`) | Issue/renew TLS certificates via certbot or acme.sh | `install`, `cert-issue`, `cert-renew` | choose `--tls selfsigned` or `--tls existing` |
+| Cloudflare API (`api.cloudflare.com`) | Only if you pass `--acme-challenge dns-cloudflare` | certificate issuance | do not enable that challenge |
+| Public DNS resolvers (`1.1.1.1`, `8.8.8.8`) | `dns-check` verification queries | `dns-check` | run `dns-check` when convenient; it is read-only |
+
+Notes:
+
+- `dig`/DNS lookups used while configuring (preflight PTR/A checks, `dns-check`,
+  MX/SRV/CAA verification) are read-only and inherent to running a mail server.
+- The optional local resolver (`unbound`, default on `full`) queries DNS directly
+  from the server; it is not a “phone home” and can be disabled with
+  `--resolver system`.
+- Secrets are never sent anywhere. Generated passwords are printed to your terminal
+  only.
+
+If you want a fully offline install, use `--offline` with `--tls selfsigned` (or
+`existing`) and pre-place the Roundcube/PostfixAdmin tarballs in the cache
+directory `config/versions.env` expects.
