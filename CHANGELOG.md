@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.8.0] - 2026-10-22
+
+### Changed
+
+- Relicensed from GPL-3.0 to AGPL-3.0. The network-use clause keeps modifications
+  public when Mailstead is offered to third parties as a service, which matches the
+  project's non-commercial intent.
+- Every guide moved to an upper-case name with a table of contents and stable
+  anchors, so the documentation layout matches the rest of the project family.
+
+### Added
+
+- Arabic editions of the README and of every guide: `README_AR.md`,
+  `docs/NETWORK_AR.md`, `docs/AUTOCONFIG_AR.md`, `docs/SIGNATURES_AR.md`,
+  `docs/ADDING_A_DISTRO_AR.md`.
+- `.gitattributes` with the linguist rules, so the configuration templates are no
+  longer reported as Smarty.
+
+### Removed
+
+- `NAMING.md`. The repository layout now matches the project family; the naming and
+  header rules stay enforced by shellcheck, shfmt and `scripts/check-comments.sh`.
+
 ## [v0.7.0] - 2026-10-22
 
 ### Changed
@@ -69,4 +92,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Notes
 
 - Dovecot 2.4 is not supported until a `templates/dovecot24/` set is provided.
-- No telemetry; all outbound connections are documented in `docs/network.md` and can be disabled with `--offline`.
+- No telemetry; all outbound connections are documented in `docs/NETWORK.md` and can be disabled with `--offline`.
