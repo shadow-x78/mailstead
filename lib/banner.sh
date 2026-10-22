@@ -128,7 +128,7 @@ mailstead_banner() {
     printf '\n'
 
     # Tag line
-    local _ms_tag="Mailstead · v${APP_VERSION:-0.1.0} · Build and manage a self-hosted mail server."
+    local _ms_tag="Mailstead · v${APP_VERSION:-unknown} · Build and manage a self-hosted mail server."
     local _ms_taglen
     _ms_taglen=$(printf '%s' "$_ms_tag" | wc -m | tr -d ' ')
     local _ms_tpad=$(( (_ms_cols - _ms_taglen) / 2 ))
