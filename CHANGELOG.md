@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.8.2] - 2026-10-22
+
+### Changed
+
+- `mailstead` now opens with the terminal banner: an envelope mark, a vertical rule,
+  and the MAIL wordmark, with 256-colour, 16-colour, and plain ASCII fallbacks. The
+  art also appears in both READMEs.
+- `mailstead banner` answers before distribution detection, so it prints nothing but
+  the banner.
+
 ## [v0.8.1] - 2026-10-22
 
 ### Fixed

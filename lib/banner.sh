@@ -4,32 +4,28 @@
 # https://github.com/shadow-x78/mailstead
 # ─────────────────────────────────────────────
 
-# Design: Envelope with V-shaped flap and MAIL text.
-# Uses ONLY ▀█ block chars — renders identically in all terminals.
-
 [ -n "${_MS_BANNER_LOADED:-}" ] && return 0
 _MS_BANNER_LOADED=1
 
-# ── color support detection ────────────────────────────────────────
+# ── Colour Support ──
 MS_COLOR_SUPPORT=0
 if [ -t 1 ] && [ -z "${NO_COLOR:-}" ] && [ -z "${MS_NO_256:-}" ]; then
-    _ms_cols=$(tput colors 2>/dev/null || echo 0)
-    if [ "$_ms_cols" -ge 256 ] 2>/dev/null; then
+    _ms_colors=$(tput colors 2>/dev/null || echo 0)
+    if [ "$_ms_colors" -ge 256 ] 2>/dev/null; then
         MS_COLOR_SUPPORT=256
-    elif [ "$_ms_cols" -ge 16 ] 2>/dev/null; then
+    elif [ "$_ms_colors" -ge 16 ] 2>/dev/null; then
         MS_COLOR_SUPPORT=16
     fi
 fi
 
-# ── color definitions ─────────────────────────────────────────────
 if [ "$MS_COLOR_SUPPORT" -eq 256 ] 2>/dev/null; then
-    MS_COLOR_PRIMARY='\033[38;5;208m' # orange
-    MS_COLOR_ACCENT='\033[38;5;39m'   # teal
-    MS_COLOR_MUTED='\033[38;5;245m'   # gray
+    MS_COLOR_PRIMARY='\033[38;5;208m'
+    MS_COLOR_ACCENT='\033[38;5;39m'
+    MS_COLOR_MUTED='\033[38;5;245m'
 elif [ "$MS_COLOR_SUPPORT" -eq 16 ] 2>/dev/null; then
-    MS_COLOR_PRIMARY='\033[1;33m' # bold yellow
-    MS_COLOR_ACCENT='\033[1;36m'  # bold cyan
-    MS_COLOR_MUTED='\033[1;37m'   # bold white
+    MS_COLOR_PRIMARY='\033[0;33m'
+    MS_COLOR_ACCENT='\033[1;36m'
+    MS_COLOR_MUTED='\033[0;37m'
 else
     MS_COLOR_PRIMARY=''
     MS_COLOR_ACCENT=''
@@ -37,69 +33,75 @@ else
 fi
 
 MS_NC='\033[0m'
+if [ "$MS_COLOR_SUPPORT" -eq 0 ] 2>/dev/null; then
+    MS_NC=''
+fi
 
-# ── glyph detection ────────────────────────────────────────────────
+# ── Glyph Support ──
 MS_GLYPH_SUPPORT=0
-case "${LANG:-}${LC_ALL:-}${LC_CTYPE:-}" in
-    *UTF-8* | *utf8*) [ -t 1 ] && MS_GLYPH_SUPPORT=1 ;;
-esac
-if [ "$MS_GLYPH_SUPPORT" -eq 0 ] 2>/dev/null && command -v locale >/dev/null 2>&1; then
-    _ms_charmap=$(locale charmap 2>/dev/null || true)
-    case "$_ms_charmap" in
-        UTF-8* | utf-8*) [ -t 1 ] && MS_GLYPH_SUPPORT=1 ;;
+if [ -z "${MS_ASCII:-}" ]; then
+    case "${LANG:-}${LC_ALL:-}${LC_CTYPE:-}" in
+        *UTF-8* | *utf8*) [ -t 1 ] && MS_GLYPH_SUPPORT=1 ;;
     esac
+    if [ "$MS_GLYPH_SUPPORT" -eq 0 ] 2>/dev/null && command -v locale >/dev/null 2>&1; then
+        _ms_charmap=$(locale charmap 2>/dev/null || true)
+        case "$_ms_charmap" in
+            UTF-8* | utf-8*) [ -t 1 ] && MS_GLYPH_SUPPORT=1 ;;
+        esac
+    fi
 fi
 
-# Force ASCII mode
-[ -n "${MS_ASCII:-}" ] && MS_GLYPH_SUPPORT=0
+# ── Logo: Envelope ──
+_ms_logo_glyph=(
+    '   ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄   '
+    '  █████████████████████  '
+    ' ███████████████████████ '
+    ' ██▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ '
+    ' ██ ▀▄▄           ▄▄▀ ██ '
+    ' ██     ▀▄▄   ▄▄▀     ██ '
+    ' ██       ▀▀▀▀▀       ██ '
+    ' ██                   ██ '
+    ' ██                   ██ '
+    ' ██                   ██ '
+    ' ███████████████████████ '
+    '   ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀   '
+)
 
-# ── logo lines: envelope with V-flap ──────────────────────────────
-#
-# Design: Clean envelope with V-shaped top flap.
-# Pure block characters only (▀█) — no box-drawing chars.
-# Related to mail concept (like UMO style).
-#
-if [ "$MS_GLYPH_SUPPORT" -eq 1 ]; then
-    _ms_l1='    ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀'
-    _ms_l2='    ███████████████████████'
-    _ms_l3='    ██                    ██'
-    _ms_l4='    ██                    ██'
-    _ms_l5='    ██              ██  ██'
-    _ms_l6='    ██            ██  ██  ██'
-    _ms_l7='    ██          ██  ██    ██'
-    _ms_l8='    ██        ██  ██  ██  ██'
-    _ms_l9='    ██      ██  ██    ██  ██'
-    _ms_l10='    ██    ██  ██  MAIL ██  ██'
-    _ms_l11='    ██    ██  ██      ██  ██'
-    _ms_l12='    ██      ██  ██  ██    ██'
-    _ms_l13='    ██        ██  ██  ██  ██'
-    _ms_l14='    ██          ██  ██    ██'
-    _ms_l15='    ██            ██  ██  ██'
-    _ms_l16='    ██              ██  ██'
-    _ms_l17='    ██                    ██'
-    _ms_l18='    ███████████████████████'
-else
-    _ms_l1='    +++++++++++++++++++++++++++'
-    _ms_l2='    +++++++++++++++++++++++++++'
-    _ms_l3='    +                          +'
-    _ms_l4='    +                          +'
-    _ms_l5='    +                    ++    +'
-    _ms_l6='    +                  ++ ++   +'
-    _ms_l7='    +                ++ ++     +'
-    _ms_l8='    +              ++ ++ ++    +'
-    _ms_l9='    +            ++ ++         +'
-    _ms_l10='    +          ++ ++   MAIL ++ +'
-    _ms_l11='    +          ++ ++       ++ +'
-    _ms_l12='    +            ++ ++ ++    +'
-    _ms_l13='    +              ++ ++ ++    +'
-    _ms_l14='    +                ++ ++     +'
-    _ms_l15='    +                  ++ ++   +'
-    _ms_l16='    +                    ++    +'
-    _ms_l17='    +                          +'
-    _ms_l18='    +++++++++++++++++++++++++++'
-fi
+_ms_logo_ascii=(
+    '   -------------------   '
+    '  #####################  '
+    ' ####################### '
+    ' ##-------------------## '
+    ' ## --\           /-- ## '
+    ' ##     --\   /--     ## '
+    ' ##       -----       ## '
+    ' ##                   ## '
+    ' ##                   ## '
+    ' ##                   ## '
+    ' ####################### '
+    '   -------------------   '
+)
 
-# ── terminal column count ──────────────────────────────────────────
+# ── Wordmark: MAIL ──
+_ms_word_glyph=(
+    '███╗   ███╗ █████╗ ██╗██╗     '
+    '████╗ ████║██╔══██╗██║██║     '
+    '██╔████╔██║███████║██║██║     '
+    '██║╚██╔╝██║██╔══██║██║██║     '
+    '██║ ╚═╝ ██║██║  ██║██║███████╗'
+    '╚═╝     ╚═╝╚═╝  ╚═╝╚═╝╚══════╝'
+)
+
+_ms_word_ascii=(
+    '#    #  ####   ####  ##       '
+    '##  ## ##  ##   ##   ##       '
+    '# ## # ##  ##   ##   ##       '
+    '#    # ######   ##   ##       '
+    '#    # ##  ##   ##   ##       '
+    '#    # ##  ##  ####  ######   '
+)
+
+# ── Terminal Columns ──
 _ms_term_cols() {
     if [ -z "${MS_TERM_COLS:-}" ]; then
         MS_TERM_COLS=$(tput cols 2>/dev/null || echo 80)
@@ -108,41 +110,64 @@ _ms_term_cols() {
     printf '%s' "$MS_TERM_COLS"
 }
 
-# ── full banner ───────────────────────────────────────────────────
+# ── Banner ──
 mailstead_banner() {
     local _ms_cols="${1:-$(_ms_term_cols)}"
     _ms_cols="${_ms_cols:-80}"
+    case "$_ms_cols" in
+        '' | *[!0-9]*) _ms_cols=80 ;;
+    esac
 
-    # Find the widest logo line
-    local _ms_max=0
-    local _ms_L
-    for _ms_L in "$_ms_l1" "$_ms_l2" "$_ms_l3" "$_ms_l4" "$_ms_l5" "$_ms_l6" "$_ms_l7" "$_ms_l8" "$_ms_l9" "$_ms_l10" "$_ms_l11" "$_ms_l12" "$_ms_l13" "$_ms_l14" "$_ms_l15" "$_ms_l16" "$_ms_l17" "$_ms_l18"; do
-        local _ms_w=${#_ms_L}
-        [ "$_ms_w" -gt "$_ms_max" ] && _ms_max=$_ms_w
-    done
+    local -a _ms_logo=()
+    local -a _ms_word=()
+    local _ms_sep='│'
+    if [ "${MS_GLYPH_SUPPORT:-0}" -eq 1 ] 2>/dev/null; then
+        _ms_logo=("${_ms_logo_glyph[@]}")
+        _ms_word=("${_ms_word_glyph[@]}")
+    else
+        _ms_logo=("${_ms_logo_ascii[@]}")
+        _ms_word=("${_ms_word_ascii[@]}")
+        _ms_sep='|'
+    fi
 
-    # Pad each line
-    local _ms_pad=$(((_ms_cols - _ms_max) / 2))
+    local _ms_word_top=3
+    local _ms_word_w=${#_ms_word[0]}
+    local _ms_width=$((${#_ms_logo[0]} + 3 + _ms_word_w))
+    local _ms_pad=$(((_ms_cols - _ms_width) / 2))
     [ "$_ms_pad" -lt 0 ] && _ms_pad=0
 
-    for _ms_L in "$_ms_l1" "$_ms_l2" "$_ms_l3" "$_ms_l4" "$_ms_l5" "$_ms_l6" "$_ms_l7" "$_ms_l8" "$_ms_l9" "$_ms_l10" "$_ms_l11" "$_ms_l12" "$_ms_l13" "$_ms_l14" "$_ms_l15" "$_ms_l16" "$_ms_l17" "$_ms_l18"; do
-        printf "${MS_COLOR_PRIMARY}%*s${_ms_L}${MS_NC}\n" "$_ms_pad" ''
+    local _ms_i
+    local _ms_blank
+    _ms_blank=$(printf '%*s' "$_ms_word_w" '')
+
+    for _ms_i in "${!_ms_logo[@]}"; do
+        local _ms_right="$_ms_blank"
+        local _ms_off=$((_ms_i - _ms_word_top))
+        if [ "$_ms_off" -ge 0 ] && [ "$_ms_off" -lt "${#_ms_word[@]}" ]; then
+            _ms_right="${_ms_word[$_ms_off]}"
+        fi
+        printf '%b%*s%s %s %s%b\n' \
+            "$MS_COLOR_PRIMARY" "$_ms_pad" '' \
+            "${_ms_logo[$_ms_i]}" "$_ms_sep" "$_ms_right" "$MS_NC"
     done
     printf '\n'
 
-    # Tag line
-    local _ms_tag="Mailstead · v${APP_VERSION:-unknown} · Build and manage a self-hosted mail server."
+    local _ms_tag
+    if [ "${MS_GLYPH_SUPPORT:-0}" -eq 1 ] 2>/dev/null; then
+        _ms_tag="Mailstead · v${APP_VERSION:-unknown} · Build and manage a self-hosted mail server."
+    else
+        _ms_tag="Mailstead - v${APP_VERSION:-unknown} - Build and manage a self-hosted mail server."
+    fi
     local _ms_taglen
     _ms_taglen=$(printf '%s' "$_ms_tag" | wc -m | tr -d ' ')
     local _ms_tpad=$(((_ms_cols - _ms_taglen) / 2))
     [ "$_ms_tpad" -lt 0 ] && _ms_tpad=0
-    printf "${MS_COLOR_ACCENT}%*s${_ms_tag}${MS_NC}\n" "$_ms_tpad" ''
+    printf '%b%*s%s%b\n' "$MS_COLOR_ACCENT" "$_ms_tpad" '' "$_ms_tag" "$MS_NC"
 
-    # Author line
-    local _ms_auth="By shadow-x78"
+    local _ms_auth='By shadow-x78'
     local _ms_authlen
     _ms_authlen=$(printf '%s' "$_ms_auth" | wc -m | tr -d ' ')
     local _ms_apad=$(((_ms_cols - _ms_authlen) / 2))
     [ "$_ms_apad" -lt 0 ] && _ms_apad=0
-    printf "${MS_COLOR_MUTED}%*s${_ms_auth}${MS_NC}\n\n" "$_ms_apad" ''
+    printf '%b%*s%s%b\n\n' "$MS_COLOR_MUTED" "$_ms_apad" '' "$_ms_auth" "$MS_NC"
 }

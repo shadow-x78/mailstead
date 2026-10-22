@@ -4,7 +4,7 @@
 
 خادم بريد مستضاف ذاتياً لأنظمة Debian و Ubuntu و Fedora وعائلة RHEL.
 
-[![الإصدار](https://img.shields.io/badge/version-0.8.1-2563eb?style=for-the-badge&logo=semver)](CHANGELOG.md)
+[![الإصدار](https://img.shields.io/badge/version-0.8.2-2563eb?style=for-the-badge&logo=semver)](CHANGELOG.md)
 [![الرخصة](https://img.shields.io/badge/license-AGPL--3.0-dc2626?style=for-the-badge&logo=gnu)](LICENSE)
 ![Shell](https://img.shields.io/badge/bash-5.2%2B-16a34a?style=for-the-badge&logo=gnubash)
 ![المنصّة](https://img.shields.io/badge/platform-Linux-9333ea?style=for-the-badge&logo=linux)
@@ -19,8 +19,32 @@
 
 ---
 
+<a id="banner"></a>
+## بانر الطرفية
+
+```
+          ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄    │
+         █████████████████████   │
+        ███████████████████████  │
+        ██▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██  │ ███╗   ███╗ █████╗ ██╗██╗
+        ██ ▀▄▄           ▄▄▀ ██  │ ████╗ ████║██╔══██╗██║██║
+        ██     ▀▄▄   ▄▄▀     ██  │ ██╔████╔██║███████║██║██║
+        ██       ▀▀▀▀▀       ██  │ ██║╚██╔╝██║██╔══██║██║██║
+        ██                   ██  │ ██║ ╚═╝ ██║██║  ██║██║███████╗
+        ██                   ██  │ ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝╚══════╝
+        ██                   ██  │
+        ███████████████████████  │
+          ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀    │
+
+    Mailstead · v0.8.2 · Build and manage a self-hosted mail server.
+                             By shadow-x78
+```
+
+---
+
 ## المحتويات
 
+- [بانر الطرفية](#banner)
 - [نظرة عامة](#overview)
 - [التوزيعات المدعومة](#supported-distributions)
 - [الإعدادات المسبقة](#presets)
@@ -124,7 +148,7 @@ sudo mailstead doctor                    # فحص صحي مُجمَّع
 رابط إلى صدفة:
 
 ```bash
-VERSION=0.8.1
+VERSION=0.8.2
 BASE="https://github.com/shadow-x78/mailstead/releases/download/v${VERSION}"
 curl -fsSLO "${BASE}/mailstead-${VERSION}.tar.gz"
 curl -fsSLO "${BASE}/mailstead-${VERSION}.tar.gz.sha256"

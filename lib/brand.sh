@@ -7,7 +7,7 @@
 APP_NAME="Mailstead"
 APP_SLUG="mailstead"
 APP_CMD="mailstead"
-APP_VERSION="0.8.1"
+APP_VERSION="0.8.2"
 
 APP_ETC="/etc/${APP_SLUG}"
 APP_LIB="/var/lib/${APP_SLUG}"

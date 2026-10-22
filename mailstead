@@ -205,8 +205,17 @@ main() {
     done
 
     case "$cmd" in
-        "" | help)
+        "")
+            mailstead_banner ""
             usage
+            return 0
+            ;;
+        help)
+            usage
+            return 0
+            ;;
+        banner)
+            mailstead_banner "${rest[0]:-}"
             return 0
             ;;
     esac
@@ -257,7 +266,6 @@ main() {
         upgrade-web) _dispatch cmd_upgrade_web "${rest[@]+"${rest[@]}"}" ;;
         doctor) _dispatch cmd_doctor "${rest[@]+"${rest[@]}"}" ;;
         uninstall) _dispatch cmd_uninstall "${rest[@]+"${rest[@]}"}" ;;
-        banner) _dispatch mailstead_banner "$@" ;;
         *) die "unknown command: ${cmd}. Run '${APP_CMD} --help'." "$EX_USAGE" ;;
     esac
 }
