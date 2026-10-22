@@ -1,0 +1,32 @@
+# Mailstead - Editor configuration
+# Matches the project style: 4-space indentation, Unix line endings.
+#
+# This file is optional. shfmt is the source of formatting truth for bash code.
+#
+# ─────────────────────────────────────────────
+
+root = true
+
+[*]
+indent_style = space
+indent_size = 4
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[bash *]
+indent_style = space
+indent_size = 4
+
+[*.py]
+indent_style = space
+indent_size = 4
+
+[*.tpl]
+indent_style = space
+indent_size = 4
+
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
