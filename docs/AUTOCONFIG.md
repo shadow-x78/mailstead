@@ -2,8 +2,8 @@
 
 # Autoconfig and Autodiscover - Mailstead
 
-[![Version](https://img.shields.io/badge/version-0.7.0-2563eb?style=flat-square&logo=semver)](../CHANGELOG.md)
-[![License](https://img.shields.io/badge/license-GPL--3.0-dc2626?style=flat-square)](../LICENSE)
+[![Version](https://img.shields.io/badge/version-0.8.0-2563eb?style=flat-square&logo=semver)](../CHANGELOG.md)
+[![License](https://img.shields.io/badge/license-AGPL--3.0-dc2626?style=flat-square&logo=gnu)](../LICENSE)
 ![Shell](https://img.shields.io/badge/bash-5.2%2B-16a34a?style=flat-square&logo=gnubash)
 ![Platform](https://img.shields.io/badge/platform-Linux-9333ea?style=flat-square&logo=linux)
 
@@ -11,9 +11,20 @@
 
 ---
 
+## Table of Contents
+
+- [Thunderbird (Autoconfig)](#thunderbird-autoconfig)
+- [Outlook (Autodiscover POX)](#outlook-autodiscover-pox)
+- [DNS Records](#dns-records)
+- [Verification](#verification)
+- [Known Limitations](#known-limitations)
+
+---
+
 Mailstead generates client auto-configuration for a domain so users only type their
 address and password.
 
+<a id="thunderbird-autoconfig"></a>
 ## Thunderbird (Autoconfig)
 
 Generate at `add-domain` (and via `mailstead autoconfig regenerate [DOMAIN|--all]`)
@@ -29,6 +40,7 @@ The XML advertises IMAP `993`/SSL and SMTP `587`/STARTTLS with
 mandatory TLS channel”. The display name is XML-escaped and validated with
 `xmllint` (package logical name `xmllint`).
 
+<a id="outlook-autodiscover-pox"></a>
 ## Outlook (Autodiscover POX)
 
 Outlook desktop tries, per domain:
@@ -49,7 +61,8 @@ input without a strict regex + XML escaping, limits the request body to 8 KB, do
 not log request bodies, and Nginx applies `limit_req` (5 requests/second per IP) on
 the Autodiscover path.
 
-## DNS records
+<a id="dns-records"></a>
+## DNS Records
 
 ```
 autoconfig.<d>.            A/CNAME  → mail.<d>. or the server IP
@@ -59,6 +72,7 @@ _submission._tcp.<d>.      SRV      0 1 587 mail.<d>.
 _imaps._tcp.<d>.           SRV      0 1 993 mail.<d>.
 ```
 
+<a id="verification"></a>
 ## Verification
 
 ```bash
@@ -71,7 +85,8 @@ This checks the Thunderbird XML (`xmllint`), the HTTP status of both endpoints
 993/587), that a non-hosted domain returns 404, the SRV record, and certificate
 validity.
 
-## Known limitations
+<a id="known-limitations"></a>
+## Known Limitations
 
 - **New Outlook** and the **Outlook mobile apps** do not use this mechanism fully;
   Outlook mobile goes through Microsoft cloud services and cannot be configured

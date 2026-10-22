@@ -2,8 +2,8 @@
 
 # Signatures - Mailstead
 
-[![Version](https://img.shields.io/badge/version-0.7.0-2563eb?style=flat-square&logo=semver)](../CHANGELOG.md)
-[![License](https://img.shields.io/badge/license-GPL--3.0-dc2626?style=flat-square)](../LICENSE)
+[![Version](https://img.shields.io/badge/version-0.8.0-2563eb?style=flat-square&logo=semver)](../CHANGELOG.md)
+[![License](https://img.shields.io/badge/license-AGPL--3.0-dc2626?style=flat-square&logo=gnu)](../LICENSE)
 ![Shell](https://img.shields.io/badge/bash-5.2%2B-16a34a?style=flat-square&logo=gnubash)
 ![Platform](https://img.shields.io/badge/platform-Linux-9333ea?style=flat-square&logo=linux)
 
@@ -11,10 +11,26 @@
 
 ---
 
+## Table of Contents
+
+- [Flags](#flags)
+- [Storage](#storage)
+- [Built-in Templates](#built-in-templates)
+- [Commands](#commands)
+- [HTML Sanitizer](#html-sanitizer)
+- [Image Hosting](#image-hosting)
+- [Roundcube Integration](#roundcube-integration)
+- [Desktop Export](#desktop-export)
+- [Server Footer](#server-footer)
+- [Quality Checks](#quality-checks)
+
+---
+
 Mailstead can generate text, image and HTML signatures, apply them in Roundcube,
 export them for desktop clients, and (experimentally) append a server-side legal
 footer to outbound mail.
 
+<a id="flags"></a>
 ## Flags
 
 ```
@@ -23,6 +39,7 @@ footer to outbound mail.
 --sig-images hosted|cid             # default: hosted (https URL); cid only for desktop export
 ```
 
+<a id="storage"></a>
 ## Storage
 
 ```
@@ -37,7 +54,8 @@ ${APP_LIB}/signatures/
 Priority: user override > domain profile > template. All values are HTML-escaped;
 no raw text is ever copied into HTML.
 
-## Built-in templates
+<a id="built-in-templates"></a>
+## Built-in Templates
 
 - `text-only` — plain text, first line `-- `.
 - `classic-html` — logo left/right + name + title + phone + email + website.
@@ -47,6 +65,7 @@ Templates use tables and inline CSS only (no flex/grid, no web fonts). `DIR=rtl`
 sets `dir="rtl"` and flips alignment/padding; fallback font is `Tahoma, Arial`.
 Every HTML template also produces a `.txt` alternative.
 
+<a id="commands"></a>
 ## Commands
 
 ```
@@ -67,9 +86,11 @@ mailstead sig server enable|disable|status
 
 `sig apply` is idempotent and honours `--dry-run`.
 
-## HTML sanitizer (`scripts/mailstead-sig.py`)
+<a id="html-sanitizer"></a>
+## HTML Sanitizer
 
-Allowlist-based, using the Python standard library only:
+`scripts/mailstead-sig.py` is allowlist-based and uses the Python standard library
+only:
 
 - Allowed tags: `table tbody thead tr td th p br div span a img b strong i em u hr`
   `font small h1 h2 h3 h4 ul ol li`.
@@ -86,14 +107,16 @@ Images: PNG/JPEG/GIF only (SVG and WebP rejected), ≤ 200 KB, banner width ≤ 
 logo ≤ 200×80 (stored at 2x, shown at half via `width`/`height`). Type is verified
 by file content (not extension); EXIF is stripped if `exiftool` is available.
 
-## Image hosting
+<a id="image-hosting"></a>
+## Image Hosting
 
 With `--sig-images hosted`, images are served from
 `https://<MAIL_HOSTNAME>/sig-assets/<domain>/<file>` by the mail vhost (read-only,
 immutable filenames, `Cache-Control: public, immutable`). No tracking pixels, ever.
 `cid:` inline images are only used for desktop export and increase message size.
 
-## Roundcube integration
+<a id="roundcube-integration"></a>
+## Roundcube Integration
 
 The `mailstead_signature` plugin reads `rendered/<domain>/<local>.html` on
 `login_after` and, in `default` policy, sets the main identity’s signature only when
@@ -102,7 +125,8 @@ than the stored `mailstead_sig_mtime`. It uses Roundcube’s identity/pref API, 
 direct DB writes. **[تحقق]** verify hook and API names against the installed
 Roundcube version.
 
-## Desktop export
+<a id="desktop-export"></a>
+## Desktop Export
 
 `mailstead sig export user@d --format … --out DIR` writes `signature.html`
 (Thunderbird), `<local>.htm`/`.txt` (Outlook, place in
@@ -110,7 +134,8 @@ Roundcube version.
 signatures cannot be forced on desktop clients, so image URLs must be reachable —
 which is why `hosted` is the default.
 
-## Server footer (experimental)
+<a id="server-footer"></a>
+## Server Footer
 
 `--signatures server` adds a legal footer to **outbound** mail. The footer must be
 inserted **before** DKIM signing, so Postfix routes submission through a `footer`
@@ -121,14 +146,21 @@ skips `multipart/signed`, `multipart/encrypted`, `application/pkcs7-mime`, and a
 message already carrying `X-Mailstead-Footer`. Master.cf is edited with
 `postconf -M/-P`, never by hand.
 
-Required tests before enabling: plain text, HTML only, multipart/alternative, a
-message with attachments, an S/MIME-signed message, and Arabic UTF-8/base64 — then
-confirm **DKIM = pass** on Gmail after the footer. If a system does not pass, leave
-the feature disabled (“not supported yet”).
+This feature is **experimental**. Required tests before enabling: plain text, HTML
+only, multipart/alternative, a message with attachments, an S/MIME-signed message,
+and Arabic UTF-8/base64 — then confirm **DKIM = pass** on Gmail after the footer.
+If a system does not pass, leave the feature disabled (“not supported yet”).
 
-## Quality checks (warned in `sig preview`)
+<a id="quality-checks"></a>
+## Quality Checks
 
-No image-only signatures; no URL shorteners/tracking/off-domain images; HTML ≤ 10 KB;
-images ≤ 200 KB and width ≤ 600 px; every image has `alt`; contrast ≥ 4.5:1 when
-colors are set; ≤ 5 links; legal footer ≤ 1000 chars. Keep name/title/phone as
-**text** (not inside an image), since Outlook may block remote images by default.
+Warned in `sig preview`:
+
+- No image-only signatures.
+- No URL shorteners, tracking pixels, or off-domain images.
+- HTML ≤ 10 KB; images ≤ 200 KB and width ≤ 600 px.
+- Every image has `alt`.
+- Contrast ≥ 4.5:1 when colours are set.
+- ≤ 5 links; legal footer ≤ 1000 chars.
+- Keep name/title/phone as **text** (not inside an image), since Outlook may block
+  remote images by default.

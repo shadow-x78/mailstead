@@ -2,8 +2,8 @@
 
 # Adding a Distribution - Mailstead
 
-[![Version](https://img.shields.io/badge/version-0.7.0-2563eb?style=flat-square&logo=semver)](../CHANGELOG.md)
-[![License](https://img.shields.io/badge/license-GPL--3.0-dc2626?style=flat-square)](../LICENSE)
+[![Version](https://img.shields.io/badge/version-0.8.0-2563eb?style=flat-square&logo=semver)](../CHANGELOG.md)
+[![License](https://img.shields.io/badge/license-AGPL--3.0-dc2626?style=flat-square&logo=gnu)](../LICENSE)
 ![Shell](https://img.shields.io/badge/bash-5.2%2B-16a34a?style=flat-square&logo=gnubash)
 ![Platform](https://img.shields.io/badge/platform-Linux-9333ea?style=flat-square&logo=linux)
 
@@ -11,10 +11,22 @@
 
 ---
 
+## Table of Contents
+
+- [Add the Family Module](#add-the-family-module)
+- [Extend the Package Map](#extend-the-package-map)
+- [Extend Detection](#extend-detection)
+- [Version-Sensitive Templates](#version-sensitive-templates)
+- [Documentation and Tests](#documentation-and-tests)
+- [Rule of Thumb](#rule-of-thumb)
+
+---
+
 Mailstead isolates all distribution-specific behavior behind a small interface so a
 new distribution is a single new file plus a few table entries.
 
-## 1. Add the family module
+<a id="add-the-family-module"></a>
+## Add the Family Module
 
 Create `lib/distro/<family>.sh` implementing the same functions as
 `lib/distro/debian.sh`:
@@ -35,27 +47,31 @@ Create `lib/distro/<family>.sh` implementing the same functions as
 Keep every `apt`/`dnf`/`pacman`/`zypper` and every hard-coded path **inside** this
 file. Nothing else in the codebase may reference them.
 
-## 2. Extend the package map
+<a id="extend-the-package-map"></a>
+## Extend the Package Map
 
 Add a column for the new family in `lib/distro/pkgmap.sh` (`_pkgmap_one`,
 `case "${fam}:${logical}"`). Mark optional packages in `PKG_OPTIONAL` so a missing
 optional package does not fail the run.
 
-## 3. Extend detection
+<a id="extend-detection"></a>
+## Extend Detection
 
 Update `lib/distro/detect.sh`:
 
 - map new `ID`/`ID_LIKE` values to the family,
 - keep rejecting genuinely unsupported systems with exit code 3.
 
-## 4. Version-sensitive templates
+<a id="version-sensitive-templates"></a>
+## Version-Sensitive Templates
 
 If the distribution ships a new major version of a component with a different
 config format (for example Dovecot 2.4), add a parallel template directory
 (`templates/dovecot24/`) and select it at runtime. Do not silently reuse the wrong
 templates — refuse with a clear message until the templates exist.
 
-## 5. Documentation and tests
+<a id="documentation-and-tests"></a>
+## Documentation and Tests
 
 - Add the distribution to the README support table.
 - Document anything marked `[تحقق]` in this file.
@@ -64,7 +80,8 @@ templates — refuse with a clear message until the templates exist.
   remove a component, idempotency, backup/restore, uninstall, and (for
   Fedora/RHEL-family) SELinux enforcing.
 
-## Rule of thumb
+<a id="rule-of-thumb"></a>
+## Rule of Thumb
 
 If you find yourself writing `apt`, `dnf`, `www-data` or a `/etc/...` path outside
 `lib/distro/*.sh`, stop and add it to the abstraction instead.

@@ -4,12 +4,18 @@
 
 Self-hosted mail server for Debian, Ubuntu, Fedora and RHEL-family systems.
 
-[![Version](https://img.shields.io/badge/version-0.7.0-2563eb?style=for-the-badge&logo=semver)](CHANGELOG.md)
-[![License](https://img.shields.io/badge/license-GPL--3.0-dc2626?style=for-the-badge&logo=gnu)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.8.0-2563eb?style=for-the-badge&logo=semver)](CHANGELOG.md)
+[![License](https://img.shields.io/badge/license-AGPL--3.0-dc2626?style=for-the-badge&logo=gnu)](LICENSE)
 ![Shell](https://img.shields.io/badge/bash-5.2%2B-16a34a?style=for-the-badge&logo=gnubash)
 ![Platform](https://img.shields.io/badge/platform-Linux-9333ea?style=for-the-badge&logo=linux)
 
 </div>
+
+---
+
+## Language
+
+<a href="README.md">🇬🇧 English</a> · <a href="README_AR.md">🇸🇦 العربية</a>
 
 ---
 
@@ -34,7 +40,7 @@ Self-hosted mail server for Debian, Ubuntu, Fedora and RHEL-family systems.
 
 **Mailstead** builds and manages a self-hosted, production mail server from a single command. It wires together Postfix, Dovecot, OpenDKIM, Rspamd, MariaDB, Nginx, Roundcube and (optionally) PostfixAdmin, issues TLS certificates, prints/checks every DNS record, and adds Thunderbird/Outlook autoconfig plus a signature system — tuned for high inbox placement at Google (Gmail) and Apple (iCloud).
 
-Mailstead is **open source only and non-commercial**. It contains **no telemetry**; every outbound connection the tool makes is documented in [`docs/network.md`](docs/network.md) and can be disabled with `--offline`.
+Mailstead is **open source only and non-commercial**. It contains **no telemetry**; every outbound connection the tool makes is documented in [`docs/NETWORK.md`](docs/NETWORK.md) and can be disabled with `--offline`.
 
 - Command: `mailstead`
 - Layout: runtime state lives under `/etc/mailstead`, `/var/lib/mailstead`, `/var/log/mailstead`, `/var/backups/mailstead`, `/opt/mailstead`.
@@ -49,7 +55,7 @@ Mailstead is **open source only and non-commercial**. It contains **no telemetry
 | Not supported in v1 | Arch (Manjaro/EndeavourOS), openSUSE Leap/Tumbleweed (SLES) | — |
 | Not supported | Alpine, Void, Gentoo, any non-systemd system | — |
 
-Arch and openSUSE are rejected on purpose: `mailstead install` exits with code 3 and prints "unsupported in v1". Adding a distribution is a one-file change — see [`docs/adding-a-distro.md`](docs/adding-a-distro.md).
+Arch and openSUSE are rejected on purpose: `mailstead install` exits with code 3 and prints "unsupported in v1". Adding a distribution is a one-file change — see [`docs/ADDING_A_DISTRO.md`](docs/ADDING_A_DISTRO.md).
 
 The distro abstraction (`pkg_install`, `svc_*`, `fw_*`, `path`, `web_user`) keeps all `apt`/`dnf`/`www-data` specifics inside `lib/distro/*.sh`.
 
@@ -106,7 +112,7 @@ sudo mailstead doctor                    # consolidated health check
 Releases are distributed as a tarball plus `sha256sum` and a GPG signature. Prefer downloading and verifying over piping a URL into a shell:
 
 ```bash
-VERSION=0.7.0
+VERSION=0.8.0
 BASE="https://github.com/shadow-x78/mailstead/releases/download/v${VERSION}"
 curl -fsSLO "${BASE}/mailstead-${VERSION}.tar.gz"
 curl -fsSLO "${BASE}/mailstead-${VERSION}.tar.gz.sha256"
@@ -172,7 +178,8 @@ mailstead/
 ├── templates/                 # nginx, dovecot, postfix, rspamd, php, sql templates
 ├── scripts/                   # python helpers (signature sanitizer and renderer)
 ├── tests/                     # bats suites and the VM harness
-└── docs/                      # guides (network, signatures, adding a distro)
+├── docs/                      # guides, in English and Arabic (NETWORK, AUTOCONFIG, ...)
+└── .gitattributes             # linguist rules
 ```
 
 <a id="development"></a>
@@ -191,10 +198,10 @@ CI runs the same three commands on every pull request; VM integration tests are 
 
 | Document | Description |
 |----------|-------------|
-| [network.md](docs/network.md) | Every outbound connection the tool makes |
-| [signatures.md](docs/signatures.md) | Signature templates, policies, and images |
-| [adding-a-distro.md](docs/adding-a-distro.md) | How to add a package-manager backend |
-| [NAMING.md](NAMING.md) | Naming conventions and frozen contract names |
+| [NETWORK.md](docs/NETWORK.md) | Every outbound connection the tool makes |
+| [AUTOCONFIG.md](docs/AUTOCONFIG.md) | Thunderbird autoconfig, Outlook Autodiscover, MTA-STS |
+| [SIGNATURES.md](docs/SIGNATURES.md) | Signature templates, policies, and images |
+| [ADDING_A_DISTRO.md](docs/ADDING_A_DISTRO.md) | How to add a package-manager backend |
 
 <a id="contributing"></a>
 ## Contributing
@@ -206,7 +213,7 @@ Report problems through [GitHub Issues](https://github.com/shadow-x78/mailstead/
 <a id="license"></a>
 ## License
 
-Distributed under the [GPL-3.0 License](LICENSE).
+Distributed under the [AGPL-3.0 License](LICENSE).
 
 ---
 

@@ -2,10 +2,10 @@
 
 # Contributing to Mailstead
 
-[![Version](https://img.shields.io/badge/version-0.7.0-2563eb?style=flat-square&logo=semver)](CHANGELOG.md)
-[![License](https://img.shields.io/badge/license-GPL--3.0-dc2626?style=flat-square)](LICENSE)
-![Shell](https://img.shields.io/badge/bash-5.2%2B-16a34a?style=flat-square&logo=gnubash)
-![Platform](https://img.shields.io/badge/platform-Linux-9333ea?style=flat-square&logo=linux)
+[![Version](https://img.shields.io/badge/version-0.8.0-2563eb?style=for-the-badge&logo=semver)](CHANGELOG.md)
+[![License](https://img.shields.io/badge/license-AGPL--3.0-dc2626?style=for-the-badge&logo=gnu)](LICENSE)
+![Shell](https://img.shields.io/badge/bash-5.2%2B-16a34a?style=for-the-badge&logo=gnubash)
+![Platform](https://img.shields.io/badge/platform-Linux-9333ea?style=for-the-badge&logo=linux)
 
 </div>
 
@@ -40,7 +40,7 @@ bats tests/*.bats
   as the matched text. Use helper functions (`_tpl_replace_var`, `xml_escape`).
 - Keep distribution-specific code (`apt`, `dnf`, `www-data`, paths) inside
   `lib/distro/*.sh`. Add a new distro with a single family module (see
-  `docs/adding-a-distro.md`).
+  `docs/ADDING_A_DISTRO.md`).
 - User-facing messages are in Arabic; code and comments are in English.
 - No `TODO`, no placeholders — every file ships complete.
 
@@ -51,7 +51,7 @@ bats tests/*.bats
    `svc_name`, `svc_*`, `web_user`, `fw_backend`, `fw_open`, `fw_close`, `path`).
 2. Add its columns to `lib/distro/pkgmap.sh`.
 3. Extend `distro_detect` in `lib/distro/detect.sh`.
-4. Update `docs/adding-a-distro.md`, the README table, and the VM matrix.
+4. Update `docs/ADDING_A_DISTRO.md`, the README table, and the VM matrix.
 
 ## Commits
 
@@ -61,7 +61,7 @@ Sign off your commits (DCO):
 git commit -s -m "postfix: ..."
 ```
 
-By contributing you agree your work is licensed under GPL-3.0-or-later.
+By contributing you agree your work is licensed under AGPL-3.0-or-later.
 
 ## Reporting bugs
 
