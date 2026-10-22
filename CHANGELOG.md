@@ -1,34 +1,27 @@
 # Changelog
 
-All notable changes to this project are documented here. The format follows
-[Keep a Changelog](https://keepachangelog.com/) and the project uses
-[Semantic Versioning](https://semver.org/).
+All notable changes to this project will be documented in this file.
 
-## [0.1.0] - unreleased
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [v0.1.0] - 2026-10-22
 
 ### Added
 
-- Single-command installer (`mailstead install`) with presets
-  (`send-only`, `minimal`, `standard`, `full`, `custom`) and dependency resolver.
-- Tier-1 support for Debian/Ubuntu and Fedora/RHEL-family through a distro
-  abstraction (`lib/distro/*`). Arch and openSUSE are rejected in v1 (exit 3).
-- Phases P00–P16: preflight, packages, local resolver, MariaDB, certificates,
-  Postfix, Dovecot 2.3, OpenDKIM, Rspamd, PostfixAdmin, Roundcube,
-  MTA-STS/TLS-RPT, autoconfig, security, DNS, backup and monitoring.
-- Thunderbird autoconfig and Outlook Autodiscover (POX) generation with
-  `test-autoconfig`.
-- Signature system: text/HTML templates, image handling, allowlist HTML
-  sanitizer (`mailstead-sig.py`), Roundcube plugin, desktop export and an
-  experimental server-side footer.
-- `dns-print` / `dns-check` for SPF, DKIM, DMARC, PTR/FCrDNS, MTA-STS, TLS-RPT,
-  CAA and SRV records.
-- Backup/restore, `doctor` (with `--redact`), `status`, `queue`, `logs`, and
-  `uninstall`.
-- Repository scaffolding: bats tests, shellcheck/shfmt config, CI workflow and
-  documentation.
+- feat: add the single-command installer (`mailstead install`) with the `send-only`, `minimal`, `standard`, `full`, and `custom` presets and a dependency resolver.
+- feat: add Tier-1 support for Debian/Ubuntu and Fedora/RHEL-family through a distro abstraction (`lib/distro/*`). Arch and openSUSE are rejected in v1 with exit code 3.
+- feat: add the installer phases P00-P16: preflight, packages, local resolver, MariaDB, certificates, Postfix, Dovecot 2.3, OpenDKIM, Rspamd, PostfixAdmin, Roundcube, MTA-STS/TLS-RPT, autoconfig, security, DNS, backup, and monitoring.
+- feat: add the web stack with Nginx, Roundcube webmail, and the PostfixAdmin dashboard.
+- feat: add spam filtering with Rspamd and DKIM signing with OpenDKIM.
+- feat: add security hardening, `dns-print` and `dns-check`, backup and restore, and the `doctor`, `status`, `queue`, and `logs` reports.
+- feat: add Thunderbird autoconfiguration, Outlook Autodiscover (POX), and MTA-STS endpoints.
+- feat: add the email signature engine with text and HTML templates, image handling, an allowlist HTML sanitizer (`mailstead-sig.py`), a Roundcube plugin, desktop export, and an experimental server-side footer.
+- test: add the bats suites and the virtual machine harness.
+- docs: add the README, the guides, and the governance documents.
+- ci: add the GitHub Actions workflow and the issue templates.
 
 ### Notes
 
 - Dovecot 2.4 is not supported until a `templates/dovecot24/` set is provided.
-- No telemetry; all outbound connections are documented in `docs/network.md` and
-  can be disabled with `--offline`.
+- No telemetry; all outbound connections are documented in `docs/network.md` and can be disabled with `--offline`.
