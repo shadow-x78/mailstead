@@ -1,0 +1,31 @@
+# jail.local.tpl - fail2ban jails for Mailstead services. Managed by Mailstead.
+[DEFAULT]
+backend = auto
+bantime = 1h
+findtime = 10m
+maxretry = 5
+@@FAIL2BAN_IGNORE@@
+
+[postfix]
+enabled = true
+mode = aggressive
+logpath = /var/log/mail.log
+backend = auto
+
+[postfix-sasl]
+enabled = true
+logpath = /var/log/mail.log
+backend = auto
+
+[dovecot]
+enabled = true
+logpath = /var/log/dovecot.log
+backend = auto
+
+[roundcube-auth]
+enabled = true
+logpath = @@ROUNDCUBE_LOGS@@/errors.log
+backend = auto
+
+[nginx-http-auth]
+enabled = true
