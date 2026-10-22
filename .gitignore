@@ -1,4 +1,8 @@
-# Build/runtime artifacts
+# ─────────────────────────────────────────────
+# Mailstead - Git Ignore Rules
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 *.tar.gz
 *.sha256
 /tmp/

@@ -1,3 +1,8 @@
+# ─────────────────────────────────────────────
+# Mailstead - Feature Request Template
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 name: Feature request
 description: Suggest an improvement to Mailstead
 labels: ["enhancement"]

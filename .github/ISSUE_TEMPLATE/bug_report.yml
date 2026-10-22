@@ -1,3 +1,8 @@
+# ─────────────────────────────────────────────
+# Mailstead - Bug Report Template
+# https://github.com/shadow-x78/mailstead
+# ─────────────────────────────────────────────
+
 name: Bug report
 description: Report a problem with Mailstead
 labels: ["bug"]

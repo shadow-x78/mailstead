@@ -37,12 +37,13 @@ url='https://github.com/shadow-x78/mailstead'
 collect_files() {
     find "$root" -type f \( -name '*.sh' -o -name '*.bats' -o -name '*.py' \) \
         ! -path '*/.git/*' -print
-    find "$root/templates" -type f \( -name '*.tpl' -o -name '*.sql' \) \
+    find "$root/templates" -type f \( -name '*.tpl' -o -name '*.sql' -o -name '*.php' \) \
         ! -name 'text-only.txt.tpl' -print
     find "$root/config" -type f -name '*.env' -print
     find "$root/.github/workflows" -type f -name '*.yml' -print
+    find "$root/.github/ISSUE_TEMPLATE" -type f -name '*.yml' -print
     printf '%s\n' "$root/mailstead" "$root/install.sh"
-    printf '%s\n' "$root/.editorconfig" "$root/.shellcheckrc"
+    printf '%s\n' "$root/.editorconfig" "$root/.shellcheckrc" "$root/.gitignore"
 }
 
 # ── Block Style Check ──
