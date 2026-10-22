@@ -1,10 +1,4 @@
 #!/usr/bin/env bash
-# lib/db.sh - abstract database layer for domains, mailboxes and aliases.
-#
-# Two backends share the same function signatures:
-#   backend sql          -> direct SQL on the mailserver schema (cli mode)
-#   backend postfixadmin -> postfixadmin-cli (gui mode)
-# Selected by COMP_DASHBOARD. Cluster-wide config lives in ${APP_ETC}.
 # shellcheck shell=bash
 
 MAIL_DB="mailserver"
@@ -24,7 +18,6 @@ sql_quote() {
     printf '%s' "$s"
 }
 
-# db_sql_root SQL - run a statement as the MariaDB root user via unix socket.
 db_sql_root() {
     local sql="$1"
     if ((DRY_RUN)); then
@@ -34,7 +27,6 @@ db_sql_root() {
     mysql --protocol=socket -N -B -e "$sql"
 }
 
-# db_sql_root_db DB SQL - run against a specific database.
 db_sql_root_db() {
     local db="$1" sql="$2"
     if ((DRY_RUN)); then
@@ -44,7 +36,6 @@ db_sql_root_db() {
     mysql --protocol=socket -N -B -D "$db" -e "$sql"
 }
 
-# db_query DB SQL - read-only query returning rows.
 db_query() {
     local db="$1" sql="$2"
     if ((DRY_RUN)); then
@@ -53,18 +44,15 @@ db_query() {
     mysql --protocol=socket -N -B -D "$db" -e "$sql" 2>/dev/null
 }
 
-# The CLI lives at the package root, never under public/.
 pfa_cli_path() { printf '%s/scripts/postfixadmin-cli' "$(pfa_dir 2>/dev/null || printf '/var/www/postfixadmin')"; }
 
 pfa_cli() {
     local cli
     cli="$(pfa_cli_path)"
     [[ -x "$cli" ]] || die "postfixadmin-cli not found: ${cli}"
-    # run_secret: never echo the (password-bearing) argument list into the log.
     run_secret php "$cli" "$@"
 }
 
-# ---- password hashing ----
 db_hash_password() {
     local pw="$1"
     if ((DRY_RUN)); then
@@ -74,7 +62,6 @@ db_hash_password() {
     doveadm pw -s BLF-CRYPT -p "$pw"
 }
 
-# ---- initialize (cli backend) ----
 db_configure() {
     local mailro_pw mailpw_pw
     mailro_pw="$(secret_ensure db_mailro)"
@@ -85,7 +72,6 @@ db_configure() {
         return 0
     fi
 
-    # MariaDB: bind to localhost only, skip name resolution.
     _db_mariadb_secure
 
     db_sql_root "CREATE DATABASE IF NOT EXISTS ${MAIL_DB} CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
@@ -98,7 +84,6 @@ db_configure() {
     db_sql_root "GRANT UPDATE (password, modified) ON ${MAIL_DB}.mailbox TO 'mailpw'@'127.0.0.1';"
     db_sql_root "FLUSH PRIVILEGES;"
 
-    # cli schema (postfixadmin-compatible column names).
     if [[ "$(db_backend)" == "sql" ]]; then
         db_sql_root_db "$MAIL_DB" "$(cat -- "${APP_ROOT}/templates/sql/schema.sql")"
     fi
@@ -112,7 +97,6 @@ _db_mariadb_secure() {
         backup_file "$conf"
         ensure_dir "$(dirname -- "$conf")"
         cat >"$conf" <<EOF
-# ${APP_MANAGED_MARK}
 [mysqld]
 bind-address = 127.0.0.1
 skip-name-resolve = 1
@@ -120,7 +104,6 @@ EOF
     fi
 }
 
-# ---- domains ----
 db_add_domain() {
     local domain="$1" desc="${2:-}"
     require_domain "$domain"
@@ -157,7 +140,6 @@ db_list_domains() {
     db_query "$MAIL_DB" "SELECT domain FROM domain WHERE active='1' ORDER BY domain;"
 }
 
-# ---- mailboxes ----
 db_add_mailbox() {
     local email="$1" pw="$2" quota_bytes="${3:-0}" name="${4:-}"
     require_email "$email"
@@ -216,7 +198,6 @@ db_mailbox_exists() {
     [[ "${n:-0}" -ge 1 ]]
 }
 
-# ---- aliases ----
 db_add_alias() {
     local address="$1" goto="$2"
     require_email "$address"
@@ -248,7 +229,6 @@ db_list_aliases() {
     fi
 }
 
-# ---- admin mailbox (gui) ----
 db_add_admin() {
     local email="$1" pw="$2"
     require_email "$email"

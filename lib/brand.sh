@@ -1,8 +1,4 @@
 #!/usr/bin/env bash
-# lib/brand.sh - single source of truth for the project name, command and paths.
-#
-# The project name and every filesystem path derive from the variables below.
-# Do not hardcode the project name in other files; always reference APP_* vars.
 
 APP_NAME="Mailstead"
 APP_SLUG="mailstead"
@@ -17,14 +13,11 @@ APP_OPT="/opt/${APP_SLUG}"
 APP_LIBEXEC="/usr/libexec/${APP_SLUG}"
 APP_USER_AGENT="${APP_SLUG}/${APP_VERSION}"
 
-# Project root (directory containing this lib/). Resolved from this file's path.
 APP_ROOT="${APP_ROOT:-$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)}"
 APP_EXPORT="$APP_ROOT"
 
-# Generated config/managed markers used inside external config files.
 APP_MANAGED_MARK="# Managed by ${APP_NAME} - do not edit"
 
-# Exit codes (plan-1 section 7).
 EX_OK=0
 EX_ERR=1
 EX_USAGE=2

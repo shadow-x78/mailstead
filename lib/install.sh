@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# lib/install.sh - install command: parse flags, resolve components, write
-# config, then run phases in order with dependency-aware skipping.
 # shellcheck shell=bash
 
 INSTALL_PHASES=(
@@ -55,7 +53,6 @@ _install_flag_components() {
 cmd_install() {
     components_defaults
     local cfgfile="" preset_given=0
-    # First pass: preset + config file path so later flags win over preset.
     local -a cli=()
     while [[ $# -gt 0 ]]; do
         case "$1" in
@@ -70,16 +67,13 @@ cmd_install() {
                 ;;
         esac
     done
-    # Default preset is `standard` when none is given (plan-2 section C2).
     if ((!preset_given)); then
         apply_preset standard
     fi
-    # Second pass: everything else (flags override preset).
     local -a rest=("${cli[@]}")
     local i=0
     while ((i < ${#rest[@]})); do
         local a="${rest[$i]}"
-        # Value-taking flags must be followed by their value.
         case "$a" in
             --hostname | --domain | --admin-email | --ip4 | --ip6 | --ssh-port | --admin-allow-ip | --config | --skip | --postscreen | --dane)
                 ((i + 1 < ${#rest[@]})) || die "option ${a} requires a value." "$EX_USAGE"
@@ -145,13 +139,11 @@ cmd_install() {
         i=$((i + 1))
     done
 
-    # Config file wins over CLI flags.
     if [[ -n "$cfgfile" ]]; then
         [[ -r "$cfgfile" ]] || die "config file not found: ${cfgfile}"
         _install_load_config "$cfgfile"
     fi
 
-    # --skip disables components.
     if [[ -n "${SKIP_ARG:-}" ]]; then
         local c
         local -a skips=()
@@ -169,7 +161,6 @@ cmd_install() {
         done
     fi
 
-    # Required settings.
     MAIL_HOSTNAME="${HOSTNAME_ARG:-mail.${DOMAIN_ARG:-}}"
     PRIMARY_DOMAIN="${DOMAIN_ARG:-${MAIL_HOSTNAME#mail.}}"
     ADMIN_EMAIL="${ADMIN_EMAIL_ARG:-postmaster@${PRIMARY_DOMAIN}}"
@@ -245,7 +236,6 @@ _install_write_config() {
 }
 
 install_run_phases() {
-    # Re-load config into the environment for the phases.
     config_load || true
     local file name id
     for name in "${INSTALL_PHASES[@]}"; do
@@ -263,8 +253,6 @@ install_run_phases() {
         local reason
         if ! reason="$(phase_requires_check "$req")"; then
             log_info "[skip] ${id} - ${reason}"
-            # Do NOT mark done: the component may be enabled later and the phase
-            # must then actually run.
             continue
         fi
         header "Running phase ${id} (${name#*_})"
@@ -274,8 +262,6 @@ install_run_phases() {
 }
 
 _install_summary() {
-    # In a dry-run the config file is not persisted, so require_config would
-    # die/exit and abort the whole run; the summary values are already in env.
     if ((DRY_RUN)); then
         :
     else

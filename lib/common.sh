@@ -1,15 +1,7 @@
 #!/usr/bin/env bash
-# lib/common.sh - logging, error handling, validators, template rendering,
-# backups, state and phase bookkeeping. Required by every other module.
-#
-# Every function respects the global flags set by the dispatcher:
-#   DRY_RUN=1   -> print actions instead of executing them
-#   ASSUME_YES=1 -> confirm() answers yes without prompting
-#   VERBOSE=1   -> extra diagnostics
 
 # shellcheck shell=bash
 
-# ---- globals (defaults; dispatcher overrides before sourcing modules) ----
 : "${DRY_RUN:=0}"
 : "${ASSUME_YES:=0}"
 : "${VERBOSE:=0}"
@@ -17,19 +9,15 @@
 : "${APP_LOG_DIR:=/var/log/${APP_SLUG}}"
 : "${APP_LIB_DIR:=/var/lib/${APP_SLUG}}"
 : "${APP_BACKUP_DIR:=/var/backups/${APP_SLUG}}"
-
-# One timestamp per run, used for backup directories and log lines.
 RUN_TS="${RUN_TS:-$(date +%Y%m%dT%H%M%S)}"
 LOG_FILE="${LOG_FILE:-${APP_LOG_DIR}/${APP_SLUG}.log}"
 
-# ---- logging ----
 _c_log_write() {
     local level="$1"
     shift
     local msg="$*"
     local ts
     ts="$(date '+%Y-%m-%d %H:%M:%S')"
-    # Never let logging itself kill the run.
     if [[ -n "${LOG_FILE:-}" ]]; then
         local dir
         dir="$(dirname -- "$LOG_FILE")"
@@ -71,8 +59,6 @@ on_error() {
     exit "${rc:-1}"
 }
 
-# ---- command execution ----
-# run: execute a command, logging it; under --dry-run print and skip.
 run() {
     if ((DRY_RUN)); then
         log_info "[dry-run] $*"
@@ -82,7 +68,6 @@ run() {
     "$@"
 }
 
-# run_secret: like run but the argument list is not echoed (for passwords).
 run_secret() {
     if ((DRY_RUN)); then
         log_info "[dry-run] $1 <args redacted>"
@@ -119,7 +104,6 @@ require_root() {
     fi
 }
 
-# ---- validators ----
 validate_domain() {
     local d="${1,,}"
     [[ "$d" =~ ^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$ ]]
@@ -137,7 +121,6 @@ validate_email() {
 }
 
 validate_hostname() {
-    # A domain (FQDN) that must resolve; same grammar as validate_domain.
     validate_domain "$1"
 }
 
@@ -149,10 +132,8 @@ require_email() {
     validate_email "$1" || die "invalid email address: $1"
 }
 
-# ---- password / random ----
 gen_password() {
     local len="${1:-32}"
-    # alnum only, so it can never break config files or shells.
     openssl rand -base64 72 | tr -dc 'A-Za-z0-9' | head -c "$len"
 }
 
@@ -161,7 +142,6 @@ gen_hex() {
     openssl rand -hex 64 | head -c "$len"
 }
 
-# ---- backup ----
 backup_file() {
     local path="$1"
     [[ -e "$path" ]] || return 0
@@ -178,8 +158,6 @@ backup_file() {
     printf '%s\n' "${dest}/${rel}" >>"${dest}/.index"
 }
 
-# ---- template rendering (NO sed/envsubst) ----
-# tpl_var_value NAME -> prints value or empty
 tpl_var_value() {
     local name="$1"
     if declare -p "$name" >/dev/null 2>&1; then
@@ -189,11 +167,6 @@ tpl_var_value() {
     fi
 }
 
-# _tpl_replace_var CONTENT NEEDLE VALUE
-# Replaces every occurrence of NEEDLE with VALUE and stores the result in the
-# global TPL_RESULT. Uses literal prefix/suffix splitting (not ${var//pat/rep})
-# so it is safe on Bash 5.3+, where an "&" in the replacement means "the match".
-# A global is used instead of command substitution to preserve trailing newlines.
 _tpl_replace_var() {
     local content="$1" needle="$2" value="$3"
     local out="" rest="$content"
@@ -205,7 +178,6 @@ _tpl_replace_var() {
     TPL_RESULT="${out}${rest}"
 }
 
-# render_template SRC DST [MODE] [OWNER:GROUP]
 render_template() {
     local src="$1" dst="$2" mode="${3:-0644}" owner="${4:-root:root}"
     [[ -r "$src" ]] || die "template not found: ${src}"
@@ -243,8 +215,6 @@ render_template() {
     log_debug "created ${dst} from ${src}"
 }
 
-# XML-escape a value for placing inside an XML text/attribute node.
-# Character loop avoids ${var//pat/&amp;} which Bash 5.3+ would mis-handle.
 xml_escape() {
     local s="$1" out="" ch i
     local n="${#s}"
@@ -261,9 +231,6 @@ xml_escape() {
     printf '%s' "$out"
 }
 
-# ---- Postfix config application ----
-# postconf_apply_file FILE: each non-empty, non-comment "key = value" line
-# is applied with `postconf -e`. Never rewrites main.cf directly.
 postconf_apply_file() {
     local file="$1" line
     [[ -r "$file" ]] || die "Postfix config file not found: ${file}"
@@ -274,7 +241,6 @@ postconf_apply_file() {
     done <"$file"
 }
 
-# ---- phase / state ----
 phase_path() { printf '%s/phases/%s.done' "$APP_LIB_DIR" "$1"; }
 
 phase_done() { [[ -f "$(phase_path "$1")" ]]; }
@@ -313,7 +279,6 @@ state_set() {
     fi
     mkdir -p "$(dirname -- "$file")"
     touch "$file"
-    # strip any previous value
     local tmp
     tmp="$(mktemp)"
     grep -vE "^${key}=" "$file" >"$tmp" 2>/dev/null || true
@@ -322,9 +287,7 @@ state_set() {
     chmod 0600 "$file" 2>/dev/null || true
 }
 
-# ---- service helpers ----
 svc_reload_safe() {
-    # svc_reload_safe SERVICE CHECK_CMD...
     local svc="$1"
     shift
     if ((DRY_RUN)); then
@@ -349,7 +312,6 @@ wait_for_port() {
     return 1
 }
 
-# file_mode_owner PATH MODE OWNER:GROUP  (idempotent chmod/chown)
 file_mode_owner() {
     local path="$1" mode="$2" owner="$3"
     ((DRY_RUN)) && {
@@ -361,7 +323,6 @@ file_mode_owner() {
     chown "$owner" "$path" 2>/dev/null || true
 }
 
-# Write a value to secrets file (0600) if absent; print existing otherwise.
 secret_path() { printf '%s/secrets/%s.pw' "${APP_ETC_DIR:-/etc/${APP_SLUG}}" "$1"; }
 
 secret_get() {
@@ -372,7 +333,6 @@ secret_get() {
 }
 
 secret_ensure() {
-    # secret_ensure NAME [LEN] -> creates if missing, prints value.
     local name="$1" len="${2:-32}" f val
     f="$(secret_path "$name")"
     if ((DRY_RUN)); then
@@ -394,10 +354,8 @@ secret_ensure() {
     printf '%s' "$val"
 }
 
-# Print a section header used across the CLI.
 header() { printf '\n=== %s ===\n' "$*"; }
 
-# ---- external downloads ----
 load_versions() {
     local f="${APP_ROOT}/config/versions.env"
     [[ -r "$f" ]] || die "versions file not found: ${f}"
@@ -405,10 +363,6 @@ load_versions() {
     . "$f"
 }
 
-# download_verified URL DEST SHA256
-# Honors --offline (OFFLINE=1): uses an existing file at DEST without network.
-# Under --dry-run a missing file is never fatal: it previews the fetch and skips
-# checksum verification (there is nothing on disk to verify yet).
 download_verified() {
     local url="$1" dest="$2" sha="$3"
     if [[ -f "$dest" ]]; then

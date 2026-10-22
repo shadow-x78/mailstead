@@ -1,13 +1,7 @@
 #!/usr/bin/env bash
-# lib/os.sh - OS/distro bootstrap and shared system helpers.
-#
-# Loads the distro abstraction (detect + pkgmap + family module) and exposes
-# helpers used by every phase. All package/service/path access goes through the
-# family interface; no apt/dnf/www-data literal outside lib/distro/*.sh.
 
 os_init() {
     local force="${1:-}"
-    # Load the distro detection helpers lazily (idempotent).
     # shellcheck source=lib/distro/detect.sh
     . "${APP_ROOT}/lib/distro/detect.sh"
     distro_detect "$force"
@@ -23,7 +17,6 @@ os_init() {
     export DISTRO_FAMILY PKG_MGR
 }
 
-# ensure_dir DIR [MODE] [OWNER:GROUP]
 ensure_dir() {
     local dir="$1" mode="${2:-0755}" owner="${3:-root:root}"
     if ((DRY_RUN)); then
@@ -34,7 +27,6 @@ ensure_dir() {
     install -d -m "$mode" -o "$u" -g "$g" -- "$dir"
 }
 
-# ensure_group GROUP GID
 ensure_group() {
     local group="$1" gid="${2:-}"
     getent group "$group" >/dev/null 2>&1 && return 0
@@ -45,7 +37,6 @@ ensure_group() {
     if [[ -n "$gid" ]]; then groupadd -g "$gid" "$group"; else groupadd -r "$group"; fi
 }
 
-# ensure_user USER UID HOME [SHELL] [GROUP]
 ensure_user() {
     local user="$1" uid="$2" home="$3" shell="${4:-/usr/sbin/nologin}" group="${5:-$1}"
     id -u "$user" >/dev/null 2>&1 && return 0
@@ -58,7 +49,6 @@ ensure_user() {
     useradd "${args[@]}" "$user"
 }
 
-# ensure_system_user USER SHELL: no home, no login (e.g. mailstead-filter).
 ensure_system_user() {
     local user="$1" shell="${2:-/usr/sbin/nologin}"
     id -u "$user" >/dev/null 2>&1 && return 0
@@ -69,7 +59,6 @@ ensure_system_user() {
     useradd -r -s "$shell" -M "$user"
 }
 
-# ensure_vmail_user: fixed uid/gid 5000, home /var/vmail (matches Dovecot).
 ensure_vmail_user() {
     if ((DRY_RUN)); then
         log_info "[dry-run] ensure vmail user (uid/gid 5000)"
@@ -88,18 +77,15 @@ svc_exists() {
     systemctl list-unit-files --type=service "$1.service" --no-legend 2>/dev/null | grep -q .
 }
 
-# systemd_unit_exists UNIT (with or without .service)
 systemd_unit_exists() {
     local unit="$1"
     [[ "$unit" == *.service ]] || unit="${unit}.service"
     systemctl list-unit-files --type=service "$unit" --no-legend 2>/dev/null | grep -q .
 }
 
-# detect_public_ip4: print the public IPv4.
 detect_public_ip4() {
     local ip=""
     if ((${OFFLINE:-0})); then
-        # --offline: never call out; derive the source IP of the default route.
         if command -v ip >/dev/null 2>&1; then
             ip="$(ip route get 1.1.1.1 2>/dev/null | awk '/src/{for(i=1;i<=NF;i++) if($i=="src") print $(i+1)}' | head -n1)"
         fi
@@ -115,7 +101,6 @@ detect_public_ip4() {
     printf '%s' "$ip"
 }
 
-# is_port_listening PORT: true if something listens locally.
 is_port_listening() {
     local port="$1"
     ss -ltn 2>/dev/null | awk '{print $4}' | grep -qE "[:.]${port}\$"

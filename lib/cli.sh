@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# lib/cli.sh - day-to-day management commands (domains, mailboxes, aliases).
 # shellcheck shell=bash
 
 STANDARD_ALIASES=(postmaster abuse hostmaster dmarc tls-reports)
@@ -12,7 +11,6 @@ cli_standard_aliases() {
     done
 }
 
-# signatures_render_user EMAIL - hook used by add-mailbox.
 signatures_render_user() {
     [[ "$(comp_get signatures)" != "none" ]] || return 0
     command -v python3 >/dev/null 2>&1 || {
@@ -64,7 +62,6 @@ cmd_add_domain() {
     log_info "publish the records above, then run: ${APP_CMD} dns-check ${domain}"
 }
 
-# small wrapper so add_domain reads naturally
 end_domain_exists() { db_domain_exists "$1"; }
 
 cmd_del_domain() {

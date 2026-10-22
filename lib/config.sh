@@ -1,13 +1,8 @@
 #!/usr/bin/env bash
-# lib/config.sh - server-side configuration and secrets.
-#
-# ${APP_ETC}/mailstead.conf  (0600 root) holds non-secret server settings.
-# ${APP_ETC}/secrets/*.pw    (0600 root) hold generated passwords.
 # shellcheck shell=bash
 
 CONF_FILE_DEFAULT() { printf '%s/mailstead.conf' "$APP_ETC"; }
 
-# config_set KEY VALUE - persist a key into the config file.
 config_set() {
     local key="$1" val="$2" f
     f="$(CONF_FILE_DEFAULT)"
@@ -25,7 +20,6 @@ config_set() {
     mv -f -- "$tmp" "$f"
 }
 
-# config_load - export every KEY=VALUE from the config file into the shell.
 config_load() {
     local f
     f="$(CONF_FILE_DEFAULT)"
@@ -45,7 +39,6 @@ config_load() {
     return 0
 }
 
-# require_config - die if the server has not been installed yet.
 require_config() {
     config_load || die "no ${APP_NAME} configuration found. Run '${APP_CMD} install' first." "$EX_ERR"
     [[ -n "${MAIL_HOSTNAME:-}" && -n "${PRIMARY_DOMAIN:-}" ]] ||
