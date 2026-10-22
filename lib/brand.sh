@@ -3,7 +3,7 @@
 APP_NAME="Mailstead"
 APP_SLUG="mailstead"
 APP_CMD="mailstead"
-APP_VERSION="0.1.0"
+APP_VERSION="0.2.0"
 
 APP_ETC="/etc/${APP_SLUG}"
 APP_LIB="/var/lib/${APP_SLUG}"
