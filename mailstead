@@ -25,6 +25,8 @@ export APP_ROOT
 
 # shellcheck source=lib/brand.sh
 . "${APP_ROOT}/lib/brand.sh"
+# shellcheck source=lib/banner.sh
+. "${APP_ROOT}/lib/banner.sh"
 # shellcheck source=lib/common.sh
 . "${APP_ROOT}/lib/common.sh"
 # shellcheck source=lib/os.sh
@@ -107,7 +109,8 @@ Usage:
   ${APP_CMD} restore FILE --yes
   ${APP_CMD} upgrade-web
   ${APP_CMD} doctor
-  ${APP_CMD} uninstall [--purge] [--purge-mail] --yes
+   ${APP_CMD} uninstall [--purge] [--purge-mail] --yes
+   ${APP_CMD} banner                              # show the ASCII art logo
 
 Note: Arch Linux and openSUSE are not supported in v1. The tool is open source and non-commercial.
 To remove everything: ${APP_CMD} uninstall --purge --purge-mail --yes
@@ -249,6 +252,7 @@ main() {
         upgrade-web) _dispatch cmd_upgrade_web "${rest[@]+"${rest[@]}"}" ;;
         doctor) _dispatch cmd_doctor "${rest[@]+"${rest[@]}"}" ;;
         uninstall) _dispatch cmd_uninstall "${rest[@]+"${rest[@]}"}" ;;
+        banner) _dispatch mailstead_banner "$@" ;;
         *) die "unknown command: ${cmd}. Run '${APP_CMD} --help'." "$EX_USAGE" ;;
     esac
 }
