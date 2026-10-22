@@ -27,8 +27,8 @@ if [ "$MS_COLOR_SUPPORT" -eq 256 ] 2>/dev/null; then
     MS_COLOR_MUTED='\033[38;5;245m'     # gray
 elif [ "$MS_COLOR_SUPPORT" -eq 16 ] 2>/dev/null; then
     MS_COLOR_PRIMARY='\033[1;33m'       # bold yellow
-    MS_COLOR_ACCENT='\033[1;36m'       # bold cyan
-    MS_COLOR_MUTED='\033[1;37m'        # bold white
+    MS_COLOR_ACCENT='\033[1;36m'        # bold cyan
+    MS_COLOR_MUTED='\033[1;37m'         # bold white
 else
     MS_COLOR_PRIMARY=''
     MS_COLOR_ACCENT=''
@@ -52,46 +52,49 @@ fi
 # Force ASCII mode
 [ -n "${MS_ASCII:-}" ] && MS_GLYPH_SUPPORT=0
 
-# ── logo lines (mailbox with flag) ────────────────────────────────
+# ── logo lines (filled blocks only — no box-drawing chars) ──────────
+#
+# Design: solid mailbox with MAIL text and a flag sticking to the right.
+# Uses only █▀▄ (full-width block chars) — renders identically in all
+# terminals regardless of font or box-drawing support.
+#
 if [ "$MS_GLYPH_SUPPORT" -eq 1 ]; then
-    _ms_l1='    ▄██████████████████▄  '
-    _ms_l2='    ██                  ██'
-    _ms_l3='    ██  ╔═══════════╗  ██'
-    _ms_l4='    ██  ║    ✉ MAIL  ║  ██'
-    _ms_l5='    ██  ╚═══════════╝  ██'
-    _ms_l6='    ██                  ██'
+    _ms_l1='    ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀'
+    _ms_l2='    █████████████████████'
+    _ms_l3='    ██        MAIL      ██'
+    _ms_l4='    ██                  ██'
+    _ms_l5='    ██                  ██'
+    _ms_l6='    █████████████████████'
     _ms_l7='    ██                  ██'
-    _ms_l8='    ████              ████'
-    _ms_l9='      ██              ██  '
-    _ms_l10='      ██              ██  '
-    _ms_l11='      ╫╫╫             ╫╫  '
-    _ms_l12='       └──────────────┘  '
+    _ms_l8='    ██                  ██'
+    _ms_l9='    ██                  ██'
+    _ms_l10='    █████████████████████'
+    _ms_l11='    ██   ████  ██  ██'
+    _ms_l12='    ██   ██      ██'
+    _ms_l13='    ██   ██      ██'
+    _ms_l14='    ██   ████  ██  ██'
+    _ms_l15='    ██                  ██'
+    _ms_l16='    ██                  ██'
+    _ms_l17='    ▀▀▀▀▀▀▀     ██  ▀▀▀▀▀▀▀'
 else
-    _ms_l1='    ++++++++++++++++++++++  '
-    _ms_l2='    +                    +'
-    _ms_l3='    +  +-------------+  +'
-    _ms_l4='    +  |    MAIL    |  +'
-    _ms_l5='    +  +-------------+  +'
-    _ms_l6='    +                    +'
-    _ms_l7='    +                    +'
-    _ms_l8='    ++++              ++++'
-    _ms_l9='      ++              ++  '
-    _ms_l10='      ++              ++  '
-    _ms_l11='      |||             ||| '
-    _ms_l12='       +-------------+  '
+    _ms_l1='    +++++++++++++++++++++++'
+    _ms_l2='    +++++++++++++++++++++++'
+    _ms_l3='    +        MAIL      +'
+    _ms_l4='    +                  +'
+    _ms_l5='    +                  +'
+    _ms_l6='    +++++++++++++++++++++++'
+    _ms_l7='    +                  +'
+    _ms_l8='    +                  +'
+    _ms_l9='    +                  +'
+    _ms_l10='    +++++++++++++++++++++++'
+    _ms_l11='    +   ++++  +  +'
+    _ms_l12='    +   ++      +'
+    _ms_l13='    +   ++      +'
+    _ms_l14='    +   ++++  +  +'
+    _ms_l15='    +                  +'
+    _ms_l16='    +                  +'
+    _ms_l17='    ++++      ++    ++++'
 fi
-
-# ── helper: repeat a character ─────────────────────────────────────
-_ms_repeat() {
-    _ms_char="$1"; _ms_count="$2"
-    _ms_out=''
-    [ "$_ms_count" -lt 0 ] 2>/dev/null && _ms_count=0
-    while [ "$_ms_i" -lt "$_ms_count" ]; do
-        _ms_out="$_ms_out$_ms_char"
-        _ms_i=$(( _ms_i + 1 ))
-    done
-    printf '%s' "$_ms_out"
-}
 
 # ── terminal column count ──────────────────────────────────────────
 _ms_term_cols() {
@@ -109,7 +112,8 @@ mailstead_banner() {
 
     # Find the widest logo line
     local _ms_max=0
-    for _ms_L in "$_ms_l1" "$_ms_l2" "$_ms_l3" "$_ms_l4" "$_ms_l5" "$_ms_l6" "$_ms_l7" "$_ms_l8" "$_ms_l9" "$_ms_l10" "$_ms_l11" "$_ms_l12"; do
+    local _ms_L
+    for _ms_L in "$_ms_l1" "$_ms_l2" "$_ms_l3" "$_ms_l4" "$_ms_l5" "$_ms_l6" "$_ms_l7" "$_ms_l8" "$_ms_l9" "$_ms_l10" "$_ms_l11" "$_ms_l12" "$_ms_l13" "$_ms_l14" "$_ms_l15" "$_ms_l16" "$_ms_l17"; do
         local _ms_w=${#_ms_L}
         [ "$_ms_w" -gt "$_ms_max" ] && _ms_max=$_ms_w
     done
@@ -118,18 +122,9 @@ mailstead_banner() {
     local _ms_pad=$(( (_ms_cols - _ms_max) / 2 ))
     [ "$_ms_pad" -lt 0 ] && _ms_pad=0
 
-    printf "${MS_COLOR_PRIMARY}%*s${_ms_l1}${MS_NC}\n" "$_ms_pad" ''
-    printf "${MS_COLOR_PRIMARY}%*s${_ms_l2}${MS_NC}\n" "$_ms_pad" ''
-    printf "${MS_COLOR_PRIMARY}%*s${_ms_l3}${MS_NC}\n" "$_ms_pad" ''
-    printf "${MS_COLOR_PRIMARY}%*s${_ms_l4}${MS_NC}\n" "$_ms_pad" ''
-    printf "${MS_COLOR_PRIMARY}%*s${_ms_l5}${MS_NC}\n" "$_ms_pad" ''
-    printf "${MS_COLOR_PRIMARY}%*s${_ms_l6}${MS_NC}\n" "$_ms_pad" ''
-    printf "${MS_COLOR_PRIMARY}%*s${_ms_l7}${MS_NC}\n" "$_ms_pad" ''
-    printf "${MS_COLOR_PRIMARY}%*s${_ms_l8}${MS_NC}\n" "$_ms_pad" ''
-    printf "${MS_COLOR_PRIMARY}%*s${_ms_l9}${MS_NC}\n" "$_ms_pad" ''
-    printf "${MS_COLOR_PRIMARY}%*s${_ms_l10}${MS_NC}\n" "$_ms_pad" ''
-    printf "${MS_COLOR_PRIMARY}%*s${_ms_l11}${MS_NC}\n" "$_ms_pad" ''
-    printf "${MS_COLOR_PRIMARY}%*s${_ms_l12}${MS_NC}\n" "$_ms_pad" ''
+    for _ms_L in "$_ms_l1" "$_ms_l2" "$_ms_l3" "$_ms_l4" "$_ms_l5" "$_ms_l6" "$_ms_l7" "$_ms_l8" "$_ms_l9" "$_ms_l10" "$_ms_l11" "$_ms_l12" "$_ms_l13" "$_ms_l14" "$_ms_l15" "$_ms_l16" "$_ms_l17"; do
+        printf "${MS_COLOR_PRIMARY}%*s${_ms_L}${MS_NC}\n" "$_ms_pad" ''
+    done
     printf '\n'
 
     # Tag line
