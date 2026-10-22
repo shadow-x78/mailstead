@@ -35,6 +35,9 @@ jobs:
       - name: python syntax
         run: python3 -m py_compile scripts/mailstead-sig.py
 
+      - name: credit banner
+        run: bash scripts/check-comments.sh
+
       - name: bats
         run: bats tests/*.bats
 
