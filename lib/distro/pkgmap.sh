@@ -96,14 +96,4 @@ dedupe_lines() {
     awk '!seen[$0]++'
 }
 
-# Logical package names that may be missing on some releases; pkg_install
-# skips them with a warning instead of failing the whole phase.
-PKG_OPTIONAL=(php-imap xmllint exiftool pflogsumm swaks unattended-upgrades)
 
-pkg_is_optional() {
-    local logical="$1" o
-    for o in "${PKG_OPTIONAL[@]}"; do
-        [[ "$o" == "$logical" ]] && return 0
-    done
-    return 1
-}

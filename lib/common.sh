@@ -119,13 +119,6 @@ require_root() {
     fi
 }
 
-require_cmd() {
-    local c
-    for c in "$@"; do
-        command -v "$c" >/dev/null 2>&1 || die "required command not found: ${c}. Install it and try again."
-    done
-}
-
 # ---- validators ----
 validate_domain() {
     local d="${1,,}"
